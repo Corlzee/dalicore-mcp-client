@@ -1,4 +1,4 @@
-# ClaudeServerCommander - Exploration of Antropic Model Context Protocol
+# ClaudeComputerCommander - Exploration of Antropic Model Context Protocol
 
 This repo is for YouTube strem of exploring and hacking Claude MCPs: https://youtube.com/live/TlbjFDbl5Us?feature=share
 
