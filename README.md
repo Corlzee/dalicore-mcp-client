@@ -1,6 +1,57 @@
-# ClaudeComputerCommander - Exploration of Antropic Model Context Protocol
 
-This repo is for YouTube strem of exploring and hacking Claude MCPs: https://youtube.com/live/TlbjFDbl5Us?feature=share
+# Claude Computer Commander
+
+A secure terminal server that allows Claude to execute commands on your computer with a configurable blacklist of commands for security.
+
+## Features
+
+- Execute terminal commands through Claude
+- Configurable command blacklist for security
+- Process management (list and kill processes)
+- Persistent configuration of allowed commands from chat
+
+## Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/wonderwhy-er/ClaudeComputerCommander.git
+cd ClaudeComputerCommander
+```
+
+2. Build and setup the server:
+```bash
+npm run setup
+```
+
+This command will:
+- install dependencies
+- build the server
+- create a config file for Claude's desktop app if it doesn't exist
+- add MCP server to Claude's config file
+
+## Usage
+
+The server provides the following tools:
+
+- `execute_command`: Execute terminal commands (except blacklisted ones)
+- `list_processes`: View all running processes
+- `kill_process`: Terminate a process by PID
+- `block_command`: Add a command to the blacklist
+- `unblock_command`: Remove a command from the blacklist
+- `list_blocked_commands`: View all currently blocked commands
+
+## Logs
+
+All server operations are logged to `server.log` with timestamps for auditing and debugging.
+
+## License
+
+MIT
+
+
+# Exploration of Antropic Model Context Protocol
+
+This repo was ccreated during YouTube strem of exploring and hacking Claude MCPs: https://youtube.com/live/TlbjFDbl5Us?feature=share
 
 ## Plan
 - [ ] What is Model Context Protocol?
