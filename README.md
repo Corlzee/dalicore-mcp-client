@@ -4,7 +4,7 @@ This repo is for YouTube strem of exploring and hacking Claude MCPs: https://you
 
 ## Plan
 - [ ] What is Model Context Protocol?
-     a new standard for connecting AI assistants to the systems where data lives
+     1. a new standard for connecting AI assistants to the systems where data lives
       
 - [ ] How it differes from OpenAI CustomGPTs actions?
      1. Local MCP server support in the Claude Desktop apps (ChatGPT can't connect to local ones, only globally hosted ones)
