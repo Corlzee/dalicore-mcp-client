@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "description": "MCP server for terminal operations",
   "license": "MIT",
-  "author": "Anthropic, PBC (https://anthropic.com)",
-  "homepage": "https://modelcontextprotocol.io",
-  "bugs": "https://github.com/modelcontextprotocol/servers/issues",
+  "author": "Eduards Ruzga",
+  "homepage": "https://github.com/wonderwhy-er/ClaudeComputerCommander",
   "type": "module",
   "bin": {
     "mcp-server-terminal": "dist/index.js"
@@ -15,9 +14,10 @@
   ],
   "scripts": {
     "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
     "watch": "tsc --watch",
     "start": "npm run build && node dist/index.js",
-    "setup": "npm install && npm run build && node setup-claude-server.js"
+    "setup": "npm install && node setup-claude-server.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.0.1",
