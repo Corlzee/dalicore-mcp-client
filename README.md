@@ -17,8 +17,8 @@ This repo is for YouTube strem of exploring and hacking Claude MCPs: https://you
         
 
 - [ ] Test reference servers
-      https://github.com/modelcontextprotocol/servers
-      tested file server
+     1. tested https://github.com/modelcontextprotocol/servers
+     2. Made it write new terminal server
 
 - [ ] Create MCP server that give Claude Terminal Access and test similar to ChatGPT Server Commander
      1. we tried but Claude is not picking up our server and its hard to figure out what is wrong
