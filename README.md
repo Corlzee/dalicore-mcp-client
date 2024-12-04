@@ -19,12 +19,11 @@ This repo is for YouTube strem of exploring and hacking Claude MCPs: https://you
 - [ ] Test reference servers
       https://github.com/modelcontextprotocol/servers
       tested file server
-      
 
 - [ ] Create MCP server that give Claude Terminal Access and test similar to ChatGPT Server Commander
-      1. we tried but Claude is not picking up our server and its hard to figure out what is wrong
-      2. If you have issues with your MCP you can find logs in (~/Library/Logs/Claude/), there will be logs for individual MCPs and overall MCP log
-      3. Turns out you do not need to run server, what you put in to ~/Library/Application Support/Claude/claude_desktop_config.json is command that Claude runs to start MCP itself
-      4. Most examples use npx @modelcontextprotocol/server-filesystem style example, which would not work for your MCP as yours is not published on nom like that yet
+     1. we tried but Claude is not picking up our server and its hard to figure out what is wrong
+     2. If you have issues with your MCP you can find logs in (~/Library/Logs/Claude/), there will be logs for individual MCPs and overall MCP log
+     3. Turns out you do not need to run server, what you put in to ~/Library/Application Support/Claude/claude_desktop_config.json is command that Claude runs to start MCP itself
+     4. Most examples use npx @modelcontextprotocol/server-filesystem style example, which would not work for your MCP as yours is not published on nom like that yet 
       
 
