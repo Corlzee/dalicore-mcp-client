@@ -1,0 +1,32 @@
+{
+  "name": "@modelcontextprotocol/server-terminal",
+  "version": "0.1.0",
+  "description": "MCP server for terminal operations",
+  "license": "MIT",
+  "author": "Anthropic, PBC (https://anthropic.com)",
+  "homepage": "https://modelcontextprotocol.io",
+  "bugs": "https://github.com/modelcontextprotocol/servers/issues",
+  "type": "module",
+  "bin": {
+    "mcp-server-terminal": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "watch": "tsc --watch",
+    "start": "npm run build && node dist/index.js",
+    "setup": "npm install && npm run build && node setup-claude-server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.0.1",
+    "glob": "^10.3.10",
+    "zod-to-json-schema": "^3.23.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "shx": "^0.3.4",
+    "typescript": "^5.3.3"
+  }
+}
