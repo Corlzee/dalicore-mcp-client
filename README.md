@@ -1,14 +1,13 @@
-
 # Claude Computer Commander
 
-A secure terminal server that allows Claude to execute commands on your computer with a configurable blacklist of commands for security.
+A terminal server that allows Claude to execute commands on your computer and manage processes through Model Context Protocol (MCP).
 
 ## Features
 
-- Execute terminal commands through Claude
-- Configurable command blacklist for security
+- Execute terminal commands with output streaming
+- Command timeout and background execution support
 - Process management (list and kill processes)
-- Persistent configuration of allowed commands from chat
+- Session management for long-running commands
 
 ## Setup
 
@@ -24,74 +23,43 @@ npm run setup
 ```
 
 This command will:
-- install dependencies
-- build the server
-- create a config file for Claude's desktop app if it doesn't exist
-- add MCP server to Claude's config file
+- Install dependencies
+- Build the server
+- Create a config file for Claude's desktop app if it doesn't exist
+- Add MCP server to Claude's config file if its not there
+- Afterwards start the Claude and you should have access
 
 ## Usage
 
 The server provides the following tools:
 
-- `execute_command`: Execute terminal commands (except blacklisted ones)
-- `list_processes`: View all running processes
+- `execute_command`: Execute terminal commands with configurable timeout
+  - Commands that don't complete within the timeout continue running in background
+  - Use `read_output` to get new output from long-running commands
+- `read_output`: Get new output from a running command by PID
+- `force_terminate`: Stop a running command session
+- `list_sessions`: View all currently running command sessions
+- `list_processes`: View all system processes
 - `kill_process`: Terminate a process by PID
-- `block_command`: Add a command to the blacklist
-- `unblock_command`: Remove a command from the blacklist
-- `list_blocked_commands`: View all currently blocked commands
 
-## Logs
+## Handling Long-Running Commands
 
-All server operations are logged to `server.log` with timestamps for auditing and debugging.
+When executing commands that may take a while to complete:
 
-# Known issues
-- there is some weird issue with errors when starting ~/Library/Logs/Claude/mcp.log
-```
-2024-12-04T12:49:49.902Z [error] Error in MCP connection to server terminal: SyntaxError: Unexpected token '>', "> tsc && s"... is not valid JSON
-    at JSON.parse (<anonymous>)
-    at Jbe (/Applications/Claude.app/Contents/Resources/app.asar/.vite/build/index.js:52:189)
-    at Xbe.readMessage (/Applications/Claude.app/Contents/Resources/app.asar/.vite/build/index.js:52:115)
-    at t0e.processReadBuffer (/Applications/Claude.app/Contents/Resources/app.asar/.vite/build/index.js:53:1842)
-    at Socket.<anonymous> (/Applications/Claude.app/Contents/Resources/app.asar/.vite/build/index.js:53:1523)
-    at Socket.emit (node:events:519:28)
-    at addChunk (node:internal/streams/readable:559:12)
-    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
-    at Readable.push (node:internal/streams/readable:390:5)
-    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)
-```
-Seen similar issue here https://github.com/modelcontextprotocol/servers/issues/133
-Not sure how to fix yet
+1. The `execute_command` tool will return after a timeout (default: 1 second) with initial output
+2. If the command is still running, it continues in the background
+3. Use `read_output` with the returned PID to get any new output
+4. Use `force_terminate` to stop a running command if needed
 
-# Exploration of Antropic Model Context Protocol
+# Model Context Protocol Integration
 
-This repo was created during YouTube strem of exploring and hacking Claude MCPs: https://youtube.com/live/TlbjFDbl5Us?feature=share
+This project demonstrates the integration with Anthropic's Model Context Protocol (MCP), which allows AI assistants to interact with local systems. Key differences from OpenAI's Custom GPT actions:
 
-## Plan
-- [x] What is Model Context Protocol?
-     1. a new standard for connecting AI assistants to the systems where data lives
-      
-- [x] How it differes from OpenAI CustomGPTs actions?
-     1. Local MCP server support in the Claude Desktop apps (ChatGPT can't connect to local ones, only globally hosted ones)
-     2. There seem to be more adoption of making such servers
-     3. setup on first try is a bit confusing
-     4. you need to create file for config claude_desktop_config.json if its not there
-     5. OpenAI uses OpenAPI schema to define HTTPS calls, MCP defines tool calls
-     6. It seems like Claude Desktop can't work with servers on internet
-     7. It is not as straightforward to run for now
-        
+- Local server support in Claude Desktop (vs. only internet-hosted actions in ChatGPT)
+- Uses MCP tool calls instead of OpenAPI schemas
+- Runs locally through Claude Desktop's MCP system
 
-- [x] Test reference servers
-     1. tested https://github.com/modelcontextprotocol/servers
-     2. Made it write new terminal server
-
-- [x] Create MCP server that give Claude Terminal Access and test similar to ChatGPT Server Commander
-     1. we tried but Claude is not picking up our server and its hard to figure out what is wrong
-     2. If you have issues with your MCP you can find logs in (~/Library/Logs/Claude/), there will be logs for individual MCPs and overall MCP log
-     3. Turns out you do not need to run server, what you put in to ~/Library/Application Support/Claude/claude_desktop_config.json is command that Claude runs to start MCP itself
-     4. Most examples use npx @modelcontextprotocol/server-filesystem style example, which would not work for your MCP as yours is not published on nom like that yet
-     5. There are also some issues
-      
-
+Created as part of exploring Claude MCPs: https://youtube.com/live/TlbjFDbl5Us
 
 ## License
 
