@@ -51,10 +51,6 @@ if (!existsSync(claudeConfigPath)) {
     
     // Create default config
     const defaultConfig = {
-        "organizationId": "",
-        "apiKey": "",
-        "apiBaseUrl": "https://claude.ai/api",
-        "proxyUrl": "",
         "serverConfig": isWindows
             ? {
                 "command": "cmd.exe",
@@ -90,12 +86,36 @@ try {
     
     config.mcpServers.terminal = serverConfig;
 
+    // Add filesystem server if not present
+    if (!config.mcpServers.filesystem) {
+        const rootPath = isWindows 
+            ? 'C:\\' // Give access to entire C drive on Windows
+            : homedir(); // Use home directory on Unix-like systems
+            
+        config.mcpServers.filesystem = {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-filesystem",
+                rootPath
+            ]
+        };
+    }
+
+    // Add puppeteer server if not present
+    if (!config.mcpServers.puppeteer) {
+        config.mcpServers.puppeteer = {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+        };
+    }
+
     // Write the updated config back
     writeFileSync(claudeConfigPath, JSON.stringify(config, null, 2), 'utf8');
     
-    logToFile('Successfully added MCP server to Claude configuration!');
+    logToFile('Successfully added MCP servers to Claude configuration!');
     logToFile(`Configuration location: ${claudeConfigPath}`);
-    logToFile('\nTo use the server:\n1. Restart Claude if it\'s currently running\n2. The terminal server will be available in Claude\'s MCP server list');
+    logToFile('\nTo use the servers:\n1. Restart Claude if it\'s currently running\n2. The servers will be available in Claude\'s MCP server list');
     
 } catch (error) {
     logToFile(`Error updating Claude configuration: ${error}`, true);

@@ -9,6 +9,11 @@ export class TerminalManager {
     const process = spawn(command, [], { shell: true });
     let output = '';
     
+    // Ensure process.pid is defined before proceeding
+    if (!process.pid) {
+      throw new Error('Failed to get process ID');
+    }
+    
     const session: TerminalSession = {
       pid: process.pid,
       process,
@@ -35,16 +40,18 @@ export class TerminalManager {
       setTimeout(() => {
         session.isBlocked = true;
         resolve({
-          pid: process.pid,
+          pid: process.pid!,
           output,
           isBlocked: true
         });
       }, timeoutMs);
 
       process.on('exit', () => {
-        this.sessions.delete(process.pid);
+        if (process.pid) {
+          this.sessions.delete(process.pid);
+        }
         resolve({
-          pid: process.pid,
+          pid: process.pid!,
           output,
           isBlocked: false
         });
@@ -57,6 +64,7 @@ export class TerminalManager {
     if (!session) {
       return null;
     }
+
     const output = session.lastOutput;
     session.lastOutput = '';
     return output;
@@ -83,15 +91,12 @@ export class TerminalManager {
   }
 
   listActiveSessions(): ActiveSession[] {
-    const sessions = [];
-    for (const [pid, session] of this.sessions) {
-      sessions.push({
-        pid,
-        isBlocked: session.isBlocked,
-        runtime: Date.now() - session.startTime.getTime()
-      });
-    }
-    return sessions;
+    const now = new Date();
+    return Array.from(this.sessions.values()).map(session => ({
+      pid: session.pid,
+      isBlocked: session.isBlocked,
+      runtime: now.getTime() - session.startTime.getTime()
+    }));
   }
 }
 

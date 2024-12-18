@@ -11,8 +11,7 @@
     "skipLibCheck": true,
     "diagnostics": true,
     "extendedDiagnostics": true,
-    "listEmittedFiles": true,
-    "allowImportingTsExtensions": true
+    "listEmittedFiles": true
   },
   "include": [
     "src/**/*.ts"

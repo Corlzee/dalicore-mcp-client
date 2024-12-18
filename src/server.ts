@@ -5,7 +5,6 @@ import {
   type CallToolRequest,
 } from "@modelcontextprotocol/sdk/types.js";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { logToFile, logError } from './logging.js';
 import { commandManager } from './command-manager.js';
 import {
   ExecuteCommandArgsSchema,
@@ -18,7 +17,6 @@ import {
 } from './tools/schemas.js';
 import { executeCommand, readOutput, forceTerminate, listSessions } from './tools/execute.js';
 import { listProcesses, killProcess } from './tools/process.js';
-import { blockCommand, unblockCommand, listBlockedCommands } from './tools/command-block.js';
 
 export const server = new Server(
   {
@@ -34,7 +32,6 @@ export const server = new Server(
 
 // Set up tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  await logToFile('Processing list_tools request');
   return {
     tools: [
       {
@@ -108,7 +105,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
   try {
     const { name, arguments: args } = request.params;
-    logToFile(`Received request for tool '${name}' with arguments: ${JSON.stringify(args)}`);
 
     switch (name) {
       case "execute_command":
@@ -123,19 +119,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
         return listProcesses();
       case "kill_process":
         return killProcess(args);
-      case "block_command":
-        return blockCommand(args);
-      case "unblock_command":
-        return unblockCommand(args);
-      case "list_blocked_commands":
-        return listBlockedCommands();
       default:
-        await logToFile(`Unknown tool requested: ${name}`);
         throw new Error(`Unknown tool: ${name}`);
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    await logError(`Error handling tool call request: ${errorMessage}`);
     return {
       content: [{ type: "text", text: `Error: ${errorMessage}` }],
       isError: true,

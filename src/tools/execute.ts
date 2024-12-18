@@ -1,10 +1,8 @@
 import { terminalManager } from '../terminal-manager.js';
 import { commandManager } from '../command-manager.js';
-import { logToFile } from '../logging.js';
 import { ExecuteCommandArgsSchema, ReadOutputArgsSchema, ForceTerminateArgsSchema, ListSessionsArgsSchema } from './schemas.js';
 
 export async function executeCommand(args: unknown) {
-  await logToFile('Processing execute_command request');
   const parsed = ExecuteCommandArgsSchema.safeParse(args);
   if (!parsed.success) {
     throw new Error(`Invalid arguments for execute_command: ${parsed.error}`);
@@ -18,8 +16,7 @@ export async function executeCommand(args: unknown) {
     parsed.data.command,
     parsed.data.timeout_ms
   );
-  
-  await logToFile(`Executed command: ${parsed.data.command} with PID ${result.pid}`);
+
   return {
     content: [{
       type: "text",
@@ -31,7 +28,6 @@ export async function executeCommand(args: unknown) {
 }
 
 export async function readOutput(args: unknown) {
-  await logToFile('Processing read_output request');
   const parsed = ReadOutputArgsSchema.safeParse(args);
   if (!parsed.success) {
     throw new Error(`Invalid arguments for read_output: ${parsed.error}`);
@@ -49,7 +45,6 @@ export async function readOutput(args: unknown) {
 }
 
 export async function forceTerminate(args: unknown) {
-  await logToFile('Processing force_terminate request');
   const parsed = ForceTerminateArgsSchema.safeParse(args);
   if (!parsed.success) {
     throw new Error(`Invalid arguments for force_terminate: ${parsed.error}`);
@@ -67,7 +62,6 @@ export async function forceTerminate(args: unknown) {
 }
 
 export async function listSessions() {
-  await logToFile('Processing list_sessions request');
   const sessions = terminalManager.listActiveSessions();
   return {
     content: [{

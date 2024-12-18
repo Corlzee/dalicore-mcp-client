@@ -2,7 +2,6 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import os from 'os';
 import { ProcessInfo } from '../types.js';
-import { logToFile } from '../logging.js';
 import { KillProcessArgsSchema } from './schemas.js';
 
 const execAsync = promisify(exec);
@@ -24,7 +23,6 @@ export async function listProcesses(): Promise<{content: Array<{type: string, te
         } as ProcessInfo;
       });
 
-    await logToFile(`Retrieved ${processes.length} processes`);
     return {
       content: [{
         type: "text",
@@ -39,7 +37,7 @@ export async function listProcesses(): Promise<{content: Array<{type: string, te
 }
 
 export async function killProcess(args: unknown) {
-  await logToFile('Processing kill_process request');
+
   const parsed = KillProcessArgsSchema.safeParse(args);
   if (!parsed.success) {
     throw new Error(`Invalid arguments for kill_process: ${parsed.error}`);
@@ -47,7 +45,6 @@ export async function killProcess(args: unknown) {
 
   try {
     process.kill(parsed.data.pid);
-    await logToFile(`Killed process ${parsed.data.pid}`);
     return {
       content: [{ type: "text", text: `Successfully terminated process ${parsed.data.pid}` }],
     };
