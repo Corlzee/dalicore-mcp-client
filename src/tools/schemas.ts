@@ -63,3 +63,8 @@ export const SearchFilesArgsSchema = z.object({
 export const GetFileInfoArgsSchema = z.object({
   path: z.string(),
 });
+
+// Edit tools schemas
+export const EditBlockArgsSchema = z.object({
+  blockContent: z.string(),
+});

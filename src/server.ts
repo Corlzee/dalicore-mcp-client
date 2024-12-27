@@ -22,6 +22,7 @@ import {
   MoveFileArgsSchema,
   SearchFilesArgsSchema,
   GetFileInfoArgsSchema,
+  EditBlockArgsSchema,
 } from './tools/schemas.js';
 import { executeCommand, readOutput, forceTerminate, listSessions } from './tools/execute.js';
 import { listProcesses, killProcess } from './tools/process.js';
@@ -36,6 +37,7 @@ import {
   getFileInfo,
   listAllowedDirectories,
 } from './tools/filesystem.js';
+import { parseEditBlock, performSearchReplace } from './tools/edit.js';
 
 export const server = new Server(
   {
@@ -138,9 +140,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: "write_file",
         description:
-          "Create a new file or completely overwrite an existing file with new content. " +
-          "Use with caution as it will overwrite existing files without warning. " +
-          "Only works within allowed directories.",
+          "Completely replace file contents. Best for large changes (>20% of file) or when edit_block fails. " +
+          "Use with caution as it will overwrite existing files. Only works within allowed directories.",
         inputSchema: zodToJsonSchema(WriteFileArgsSchema),
       },
       {
@@ -191,6 +192,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {},
           required: [],
         },
+      },
+      {
+        name: "edit_block",
+        description:
+            "Apply surgical text replacements to files. Best for small changes (<20% of file size). " +
+            "Multiple blocks can be used for separate changes. Will verify changes after application. " +
+            "Format: filepath, then <<<<<<< SEARCH, content to find, =======, new content, >>>>>>> REPLACE.",
+        inputSchema: zodToJsonSchema(EditBlockArgsSchema),
       },
     ],
   };
@@ -244,6 +253,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
       }
       
       // Filesystem tools
+      case "edit_block": {
+        const parsed = EditBlockArgsSchema.parse(args);
+        const { filePath, searchReplace } = await parseEditBlock(parsed.blockContent);
+        await performSearchReplace(filePath, searchReplace);
+        return {
+          content: [{ type: "text", text: `Successfully applied edit to ${filePath}` }],
+        };
+      }
       case "read_file": {
         const parsed = ReadFileArgsSchema.parse(args);
         const content = await readFile(parsed.path);

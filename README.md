@@ -14,6 +14,11 @@ A terminal server that allows Claude to execute commands on your computer and ma
   - Move files/directories
   - Search files
   - Get file metadata
+  - Code editing capabilities:
+  - Surgical text replacements for small changes
+  - Full file rewrites for major changes
+  - Multiple file support
+  - Pattern-based replacements
 
 ## Setup
 
@@ -50,6 +55,30 @@ The server provides these tool categories:
 - `search_files`: Pattern-based file search
 - `get_file_info`: File metadata
 
+### Edit Tools
+- `edit_block`: Apply surgical text replacements (best for changes <20% of file size)
+- `write_file`: Complete file rewrites (best for large changes >20% or when edit_block fails)
+
+Search/Replace Block Format:
+```
+filepath.ext
+<<<<<<< SEARCH
+existing code to replace
+=======
+new code to insert
+>>>>>>> REPLACE
+```
+
+Example:
+```
+src/main.js
+<<<<<<< SEARCH
+console.log("old message");
+=======
+console.log("new message");
+>>>>>>> REPLACE
+```
+
 ## Handling Long-Running Commands
 
 For commands that may take a while:
@@ -66,6 +95,7 @@ This project extends the MCP Filesystem Server to enable:
 - Full system command execution
 - Process management
 - File operations
+- Code editing with search/replace blocks
 
 Created as part of exploring Claude MCPs: https://youtube.com/live/TlbjFDbl5Us
 
