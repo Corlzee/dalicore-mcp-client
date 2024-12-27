@@ -84,23 +84,7 @@ try {
         config.mcpServers = {};
     }
     
-    config.mcpServers.terminal = serverConfig;
-
-    // Add filesystem server if not present
-    if (!config.mcpServers.filesystem) {
-        const rootPath = isWindows 
-            ? 'C:\\' // Give access to entire C drive on Windows
-            : homedir(); // Use home directory on Unix-like systems
-            
-        config.mcpServers.filesystem = {
-            "command": "npx",
-            "args": [
-                "-y",
-                "@modelcontextprotocol/server-filesystem",
-                rootPath
-            ]
-        };
-    }
+    config.mcpServers.desktopCommander = serverConfig;
 
     // Add puppeteer server if not present
     if (!config.mcpServers.puppeteer) {

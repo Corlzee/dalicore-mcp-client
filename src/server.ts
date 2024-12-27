@@ -13,15 +13,34 @@ import {
   ListSessionsArgsSchema,
   KillProcessArgsSchema,
   BlockCommandArgsSchema,
-  UnblockCommandArgsSchema
+  UnblockCommandArgsSchema,
+  ReadFileArgsSchema,
+  ReadMultipleFilesArgsSchema,
+  WriteFileArgsSchema,
+  CreateDirectoryArgsSchema,
+  ListDirectoryArgsSchema,
+  MoveFileArgsSchema,
+  SearchFilesArgsSchema,
+  GetFileInfoArgsSchema,
 } from './tools/schemas.js';
 import { executeCommand, readOutput, forceTerminate, listSessions } from './tools/execute.js';
 import { listProcesses, killProcess } from './tools/process.js';
+import {
+  readFile,
+  readMultipleFiles,
+  writeFile,
+  createDirectory,
+  listDirectory,
+  moveFile,
+  searchFiles,
+  getFileInfo,
+  listAllowedDirectories,
+} from './tools/filesystem.js';
 
 export const server = new Server(
   {
     name: "secure-terminal-server",
-    version: "0.1.0",
+    version: "0.2.0",
   },
   {
     capabilities: {
@@ -30,10 +49,10 @@ export const server = new Server(
   },
 );
 
-// Set up tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
+      // Terminal tools
       {
         name: "execute_command",
         description:
@@ -98,6 +117,81 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: [],
         },
       },
+      // Filesystem tools
+      {
+        name: "read_file",
+        description:
+          "Read the complete contents of a file from the file system. " +
+          "Handles various text encodings and provides detailed error messages " +
+          "if the file cannot be read. Only works within allowed directories.",
+        inputSchema: zodToJsonSchema(ReadFileArgsSchema),
+      },
+      {
+        name: "read_multiple_files",
+        description:
+          "Read the contents of multiple files simultaneously. " +
+          "Each file's content is returned with its path as a reference. " +
+          "Failed reads for individual files won't stop the entire operation. " +
+          "Only works within allowed directories.",
+        inputSchema: zodToJsonSchema(ReadMultipleFilesArgsSchema),
+      },
+      {
+        name: "write_file",
+        description:
+          "Create a new file or completely overwrite an existing file with new content. " +
+          "Use with caution as it will overwrite existing files without warning. " +
+          "Only works within allowed directories.",
+        inputSchema: zodToJsonSchema(WriteFileArgsSchema),
+      },
+      {
+        name: "create_directory",
+        description:
+          "Create a new directory or ensure a directory exists. Can create multiple " +
+          "nested directories in one operation. Only works within allowed directories.",
+        inputSchema: zodToJsonSchema(CreateDirectoryArgsSchema),
+      },
+      {
+        name: "list_directory",
+        description:
+          "Get a detailed listing of all files and directories in a specified path. " +
+          "Results distinguish between files and directories with [FILE] and [DIR] prefixes. " +
+          "Only works within allowed directories.",
+        inputSchema: zodToJsonSchema(ListDirectoryArgsSchema),
+      },
+      {
+        name: "move_file",
+        description:
+          "Move or rename files and directories. Can move files between directories " +
+          "and rename them in a single operation. Both source and destination must be " +
+          "within allowed directories.",
+        inputSchema: zodToJsonSchema(MoveFileArgsSchema),
+      },
+      {
+        name: "search_files",
+        description:
+          "Recursively search for files and directories matching a pattern. " +
+          "Searches through all subdirectories from the starting path. " +
+          "Only searches within allowed directories.",
+        inputSchema: zodToJsonSchema(SearchFilesArgsSchema),
+      },
+      {
+        name: "get_file_info",
+        description:
+          "Retrieve detailed metadata about a file or directory including size, " +
+          "creation time, last modified time, permissions, and type. " +
+          "Only works within allowed directories.",
+        inputSchema: zodToJsonSchema(GetFileInfoArgsSchema),
+      },
+      {
+        name: "list_allowed_directories",
+        description: 
+          "Returns the list of directories that this server is allowed to access.",
+        inputSchema: {
+          type: "object",
+          properties: {},
+          required: [],
+        },
+      },
     ],
   };
 });
@@ -107,18 +201,119 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
     const { name, arguments: args } = request.params;
 
     switch (name) {
-      case "execute_command":
-        return executeCommand(args);
-      case "read_output":
-        return readOutput(args);
-      case "force_terminate":
-        return forceTerminate(args);
+      // Terminal tools
+      case "execute_command": {
+        const parsed = ExecuteCommandArgsSchema.parse(args);
+        return executeCommand(parsed);
+      }
+      case "read_output": {
+        const parsed = ReadOutputArgsSchema.parse(args);
+        return readOutput(parsed);
+      }
+      case "force_terminate": {
+        const parsed = ForceTerminateArgsSchema.parse(args);
+        return forceTerminate(parsed);
+      }
       case "list_sessions":
         return listSessions();
       case "list_processes":
         return listProcesses();
-      case "kill_process":
-        return killProcess(args);
+      case "kill_process": {
+        const parsed = KillProcessArgsSchema.parse(args);
+        return killProcess(parsed);
+      }
+      case "block_command": {
+        const parsed = BlockCommandArgsSchema.parse(args);
+        const blockResult = await commandManager.blockCommand(parsed.command);
+        return {
+          content: [{ type: "text", text: blockResult }],
+        };
+      }
+      case "unblock_command": {
+        const parsed = UnblockCommandArgsSchema.parse(args);
+        const unblockResult = await commandManager.unblockCommand(parsed.command);
+        return {
+          content: [{ type: "text", text: unblockResult }],
+        };
+      }
+      case "list_blocked_commands": {
+        const blockedCommands = await commandManager.listBlockedCommands();
+        return {
+          content: [{ type: "text", text: blockedCommands.join('\n') }],
+        };
+      }
+      
+      // Filesystem tools
+      case "read_file": {
+        const parsed = ReadFileArgsSchema.parse(args);
+        const content = await readFile(parsed.path);
+        return {
+          content: [{ type: "text", text: content }],
+        };
+      }
+      case "read_multiple_files": {
+        const parsed = ReadMultipleFilesArgsSchema.parse(args);
+        const results = await readMultipleFiles(parsed.paths);
+        return {
+          content: [{ type: "text", text: results.join("\n---\n") }],
+        };
+      }
+      case "write_file": {
+        const parsed = WriteFileArgsSchema.parse(args);
+        await writeFile(parsed.path, parsed.content);
+        return {
+          content: [{ type: "text", text: `Successfully wrote to ${parsed.path}` }],
+        };
+      }
+      case "create_directory": {
+        const parsed = CreateDirectoryArgsSchema.parse(args);
+        await createDirectory(parsed.path);
+        return {
+          content: [{ type: "text", text: `Successfully created directory ${parsed.path}` }],
+        };
+      }
+      case "list_directory": {
+        const parsed = ListDirectoryArgsSchema.parse(args);
+        const entries = await listDirectory(parsed.path);
+        return {
+          content: [{ type: "text", text: entries.join('\n') }],
+        };
+      }
+      case "move_file": {
+        const parsed = MoveFileArgsSchema.parse(args);
+        await moveFile(parsed.source, parsed.destination);
+        return {
+          content: [{ type: "text", text: `Successfully moved ${parsed.source} to ${parsed.destination}` }],
+        };
+      }
+      case "search_files": {
+        const parsed = SearchFilesArgsSchema.parse(args);
+        const results = await searchFiles(parsed.path, parsed.pattern);
+        return {
+          content: [{ type: "text", text: results.length > 0 ? results.join('\n') : "No matches found" }],
+        };
+      }
+      case "get_file_info": {
+        const parsed = GetFileInfoArgsSchema.parse(args);
+        const info = await getFileInfo(parsed.path);
+        return {
+          content: [{ 
+            type: "text", 
+            text: Object.entries(info)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join('\n') 
+          }],
+        };
+      }
+      case "list_allowed_directories": {
+        const directories = listAllowedDirectories();
+        return {
+          content: [{ 
+            type: "text", 
+            text: `Allowed directories:\n${directories.join('\n')}` 
+          }],
+        };
+      }
       default:
         throw new Error(`Unknown tool: ${name}`);
     }

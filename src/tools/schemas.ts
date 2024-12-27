@@ -1,8 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
 
+// Terminal tools schemas
 export const ExecuteCommandArgsSchema = z.object({
   command: z.string(),
-  timeout_ms: z.number().optional().default(1000),
+  timeout_ms: z.number().optional(),
 });
 
 export const ReadOutputArgsSchema = z.object({
@@ -25,4 +26,40 @@ export const BlockCommandArgsSchema = z.object({
 
 export const UnblockCommandArgsSchema = z.object({
   command: z.string(),
+});
+
+// Filesystem tools schemas
+export const ReadFileArgsSchema = z.object({
+  path: z.string(),
+});
+
+export const ReadMultipleFilesArgsSchema = z.object({
+  paths: z.array(z.string()),
+});
+
+export const WriteFileArgsSchema = z.object({
+  path: z.string(),
+  content: z.string(),
+});
+
+export const CreateDirectoryArgsSchema = z.object({
+  path: z.string(),
+});
+
+export const ListDirectoryArgsSchema = z.object({
+  path: z.string(),
+});
+
+export const MoveFileArgsSchema = z.object({
+  source: z.string(),
+  destination: z.string(),
+});
+
+export const SearchFilesArgsSchema = z.object({
+  path: z.string(),
+  pattern: z.string(),
+});
+
+export const GetFileInfoArgsSchema = z.object({
+  path: z.string(),
 });
