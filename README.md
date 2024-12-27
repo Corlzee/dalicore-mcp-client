@@ -27,6 +27,7 @@ This command will:
 - Build the server
 - Create a config file for Claude's desktop app if it doesn't exist
 - Add MCP server to Claude's config file if its not there
+- It will also add [Puppeteer fir browser automation](https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer) and [File editing servers](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)
 - Afterwards start the Claude and you should have access
 
 ## Usage
