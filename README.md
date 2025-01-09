@@ -22,8 +22,27 @@ This server that allows Claude desktop app to execute long-running terminal comm
   - Multiple file support
   - Pattern-based replacements
 
-## Setup
+## Installation
+First, ensure you've downloaded and installed the [Claude Desktop](https://claude.ai/download app) and you have [npm installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
 
+
+### Option 1: Install from npx
+Next, add this entry to your claude_desktop_config.json (on Mac, found at ~/Library/Application\ Support/Claude/claude_desktop_config.json):
+```json
+{
+  "mcpServers": {
+    "desktop-commander": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@wonderwhy-er/desktop-commander"
+      ]
+    }
+  }
+}
+```
+
+### Option 2: Checkout locally
 1. Clone and build:
 ```bash
 git clone https://github.com/wonderwhy-er/ClaudeComputerCommander.git
@@ -35,7 +54,7 @@ The setup command will:
 - Install dependencies
 - Build the server
 - Configure Claude's desktop app
-- Add MCP servers to Claude's config
+- Add MCP servers to Claude's config if needed
 
 ## Usage
 
