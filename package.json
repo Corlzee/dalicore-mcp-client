@@ -22,7 +22,8 @@
     "test": "node test/test.js",
     "test:watch": "nodemon test/test.js",
     "link:local": "npm run build && npm link",
-    "unlink:local": "npm unlink"
+    "unlink:local": "npm unlink",
+    "inspector": "npx @modelcontextprotocol/inspector dist/index.js"
   },
   "publishConfig": {
     "access": "public"
