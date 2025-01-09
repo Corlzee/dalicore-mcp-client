@@ -1,6 +1,8 @@
 # Claude Computer Commander
 
-A terminal server that allows Claude to execute commands on your computer and manage processes through Model Context Protocol (MCP). Built on top of [MCP Filesystem Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) to provide additional terminal command execution and process management capabilities.
+Short version. Two key things. Terminal commands and diff based file editing.
+
+This server that allows Claude desktop app to execute long-running terminal commands on your computer and manage processes through Model Context Protocol (MCP) + Built on top of [MCP Filesystem Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) to provide additional file editing capabilities .
 
 ## Features
 

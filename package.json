@@ -1,13 +1,14 @@
 {
-  "name": "@modelcontextprotocol/server-terminal",
+  "name": "@modelcontextprotocol/desktop-commander",
   "version": "0.1.0",
-  "description": "MCP server for terminal operations",
+  "description": "MCP server for terminal operations and file editing",
   "license": "MIT",
   "author": "Eduards Ruzga",
   "homepage": "https://github.com/wonderwhy-er/ClaudeComputerCommander",
+  "bugs": "https://github.com/wonderwhy-er/ClaudeComputerCommander/issues",
   "type": "module",
   "bin": {
-    "mcp-server-terminal": "dist/index.js"
+    "mcp-desktop-commander": "dist/index.js"
   },
   "files": [
     "dist"
@@ -16,8 +17,31 @@
     "build": "tsc && shx chmod +x dist/*.js",
     "watch": "tsc --watch",
     "start": "node dist/index.js",
-    "setup": "npm install && npm run build && node setup-claude-server.js"
+    "setup": "npm install && npm run build && node setup-claude-server.js",
+    "prepare": "npm run build"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "terminal",
+    "claude",
+    "ai",
+    "command-line",
+    "process-management",
+    "file-editing",
+    "code-editing",
+    "diff",
+    "patch",
+    "block-editing",
+    "file-system",
+    "text-manipulation",
+    "code-modification",
+    "surgical-edits",
+    "file-operations"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.0.1",
     "glob": "^10.3.10",
