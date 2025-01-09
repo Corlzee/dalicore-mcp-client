@@ -23,11 +23,17 @@ This server that allows Claude desktop app to execute long-running terminal comm
   - Pattern-based replacements
 
 ## Installation
-First, ensure you've downloaded and installed the [Claude Desktop](https://claude.ai/download app) and you have [npm installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
+First, ensure you've downloaded and installed the [Claude Desktop app](https://claude.ai/download) and you have [npm installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
 
+### Option 1: Install trough npx
+Just run this in terminal
+```
+npx @wonderwhy-er/desktop-commander setup
+```
+Restart Claude if running
 
-### Option 1: Install from npx
-Next, add this entry to your claude_desktop_config.json (on Mac, found at ~/Library/Application\ Support/Claude/claude_desktop_config.json):
+### Option 2: Add to claude_desktop_config by hand
+Add this entry to your claude_desktop_config.json (on Mac, found at ~/Library/Application\ Support/Claude/claude_desktop_config.json):
 ```json
 {
   "mcpServers": {
@@ -41,14 +47,16 @@ Next, add this entry to your claude_desktop_config.json (on Mac, found at ~/Libr
   }
 }
 ```
+Restart Claude if running
 
-### Option 2: Checkout locally
+### Option 3: Checkout locally
 1. Clone and build:
 ```bash
 git clone https://github.com/wonderwhy-er/ClaudeComputerCommander.git
 cd ClaudeComputerCommander
 npm run setup
 ```
+Restart Claude if running
 
 The setup command will:
 - Install dependencies
@@ -119,6 +127,19 @@ This project extends the MCP Filesystem Server to enable:
 - Code editing with search/replace blocks
 
 Created as part of exploring Claude MCPs: https://youtube.com/live/TlbjFDbl5Us
+
+## Contributing
+
+If you find this project useful, please consider giving it a ⭐ star on GitHub! This helps others discover the project and encourages further development.
+
+We welcome contributions from the community! Whether you've found a bug, have a feature request, or want to contribute code, here's how you can help:
+
+- **Found a bug?** Open an issue at [github.com/wonderwhy-er/ClaudeComputerCommander/issues](https://github.com/wonderwhy-er/ClaudeComputerCommander/issues)
+- **Have a feature idea?** Submit a feature request in the issues section
+- **Want to contribute code?** Fork the repository, create a branch, and submit a pull request
+- **Questions or discussions?** Start a discussion in the GitHub Discussions tab
+
+All contributions, big or small, are greatly appreciated!
 
 ## License
 

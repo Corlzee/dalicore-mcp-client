@@ -3,9 +3,27 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { server } from './server.js';
 import { commandManager } from './command-manager.js';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+async function runSetup() {
+  const setupScript = join(__dirname, 'setup-claude-server.js');
+  const { default: setupModule } = await import(setupScript);
+  if (typeof setupModule === 'function') {
+    await setupModule();
+  }
+}
 
 async function runServer() {
   try {
+    // Check if first argument is "setup"
+    if (process.argv[2] === 'setup') {
+      await runSetup();
+      return;
+    }
     
     // Handle uncaught exceptions
     process.on('uncaughtException', async (error) => {

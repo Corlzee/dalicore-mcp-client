@@ -72,7 +72,15 @@ try {
     const config = JSON.parse(configData);
 
     // Prepare the new server config based on OS
-    const serverConfig = {
+    // Determine if running through npx or locally
+    const isNpx =  import.meta.url.endsWith('dist/setup-claude-server.js');
+
+    const serverConfig = isNpx ? {
+        "command": "npx",
+        "args": [
+            "@wonderwhy-er/desktop-commander"
+        ]
+    } : {
         "command": "node",
         "args": [
             join(__dirname, 'dist', 'index.js')
