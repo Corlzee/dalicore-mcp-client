@@ -1,10 +1,12 @@
-# Claude Computer Commander
+# Claude Desktop Commander MCP
 
+[![npm downloads](https://img.shields.io/npm/dw/@wonderwhy-er/desktop-commander)](https://www.npmjs.com/package/@wonderwhy-er/desktop-commander)
 [![smithery badge](https://smithery.ai/badge/@wonderwhy-er/desktop-commander)](https://smithery.ai/server/@wonderwhy-er/desktop-commander)
+
 
 Short version. Two key things. Terminal commands and diff based file editing.
 
-This server that allows Claude desktop app to execute long-running terminal commands on your computer and manage processes through Model Context Protocol (MCP) + Built on top of [MCP Filesystem Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) to provide additional file editing capabilities .
+This is server that allows Claude desktop app to execute long-running terminal commands on your computer and manage processes through Model Context Protocol (MCP) + Built on top of [MCP Filesystem Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) to provide additional search and replace file editing capabilities .
 
 ## Features
 
@@ -27,7 +29,7 @@ This server that allows Claude desktop app to execute long-running terminal comm
 ## Installation
 First, ensure you've downloaded and installed the [Claude Desktop app](https://claude.ai/download) and you have [npm installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
 
-### Installing via Smithery
+### Option 1: Installing via Smithery
 
 To install Desktop Commander for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@wonderwhy-er/desktop-commander):
 
@@ -35,14 +37,14 @@ To install Desktop Commander for Claude Desktop automatically via [Smithery](htt
 npx -y @smithery/cli install @wonderwhy-er/desktop-commander --client claude
 ```
 
-### Option 1: Install trough npx
+### Option 2: Install trough npx
 Just run this in terminal
 ```
 npx @wonderwhy-er/desktop-commander setup
 ```
 Restart Claude if running
 
-### Option 2: Add to claude_desktop_config by hand
+### Option 3: Add to claude_desktop_config by hand
 Add this entry to your claude_desktop_config.json (on Mac, found at ~/Library/Application\ Support/Claude/claude_desktop_config.json):
 ```json
 {
@@ -59,7 +61,7 @@ Add this entry to your claude_desktop_config.json (on Mac, found at ~/Library/Ap
 ```
 Restart Claude if running
 
-### Option 3: Checkout locally
+### Option 4: Checkout locally
 1. Clone and build:
 ```bash
 git clone https://github.com/wonderwhy-er/ClaudeComputerCommander.git

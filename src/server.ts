@@ -39,10 +39,12 @@ import {
 } from './tools/filesystem.js';
 import { parseEditBlock, performSearchReplace } from './tools/edit.js';
 
+import { VERSION } from './version.js';
+
 export const server = new Server(
   {
-    name: "secure-terminal-server",
-    version: "0.2.0",
+    name: "desktop-commander",
+    version: VERSION,
   },
   {
     capabilities: {

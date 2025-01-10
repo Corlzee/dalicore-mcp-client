@@ -95,12 +95,12 @@ try {
     config.mcpServers.desktopCommander = serverConfig;
 
     // Add puppeteer server if not present
-    if (!config.mcpServers.puppeteer) {
+    /*if (!config.mcpServers.puppeteer) {
         config.mcpServers.puppeteer = {
             "command": "npx",
             "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
         };
-    }
+    }*/
 
     // Write the updated config back
     writeFileSync(claudeConfigPath, JSON.stringify(config, null, 2), 'utf8');
