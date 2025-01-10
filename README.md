@@ -1,5 +1,7 @@
 # Claude Computer Commander
 
+[![smithery badge](https://smithery.ai/badge/@wonderwhy-er/desktop-commander)](https://smithery.ai/server/@wonderwhy-er/desktop-commander)
+
 Short version. Two key things. Terminal commands and diff based file editing.
 
 This server that allows Claude desktop app to execute long-running terminal commands on your computer and manage processes through Model Context Protocol (MCP) + Built on top of [MCP Filesystem Server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem) to provide additional file editing capabilities .
@@ -24,6 +26,14 @@ This server that allows Claude desktop app to execute long-running terminal comm
 
 ## Installation
 First, ensure you've downloaded and installed the [Claude Desktop app](https://claude.ai/download) and you have [npm installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
+
+### Installing via Smithery
+
+To install Desktop Commander for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@wonderwhy-er/desktop-commander):
+
+```bash
+npx -y @smithery/cli install @wonderwhy-er/desktop-commander --client claude
+```
 
 ### Option 1: Install trough npx
 Just run this in terminal
