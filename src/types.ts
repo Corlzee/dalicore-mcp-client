@@ -26,3 +26,11 @@ export interface ActiveSession {
   isBlocked: boolean;
   runtime: number;
 }
+
+export interface CompletedSession {
+  pid: number;
+  output: string;
+  exitCode: number | null;
+  startTime: Date;
+  endTime: Date;
+}
