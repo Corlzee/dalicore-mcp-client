@@ -64,6 +64,17 @@ export const GetFileInfoArgsSchema = z.object({
   path: z.string(),
 });
 
+// Search tools schema
+export const SearchCodeArgsSchema = z.object({
+  path: z.string(),
+  pattern: z.string(),
+  filePattern: z.string().optional(),
+  ignoreCase: z.boolean().optional(),
+  maxResults: z.number().optional(),
+  includeHidden: z.boolean().optional(),
+  contextLines: z.number().optional(),
+});
+
 // Edit tools schemas
 export const EditBlockArgsSchema = z.object({
   blockContent: z.string(),
