@@ -1,4 +1,5 @@
-# Claude Desktop Commander MCP
+# Desktop Commander MCP
+![Desktop Commander MCP](logo.png)
 
 [![npm downloads](https://img.shields.io/npm/dw/@wonderwhy-er/desktop-commander)](https://www.npmjs.com/package/@wonderwhy-er/desktop-commander)
 [![smithery badge](https://smithery.ai/badge/@wonderwhy-er/desktop-commander)](https://smithery.ai/server/@wonderwhy-er/desktop-commander)
