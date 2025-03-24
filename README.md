@@ -45,6 +45,7 @@ This is server that allows Claude desktop app to execute long-running terminal c
   - Full file rewrites for major changes
   - Multiple file support
   - Pattern-based replacements
+  - vscode-ripgrep based recursive code or text search in folders
 
 ## Installation
 First, ensure you've downloaded and installed the [Claude Desktop app](https://claude.ai/download) and you have [npm installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
@@ -115,6 +116,7 @@ The server provides these tool categories:
 - `move_file`: Move/rename files
 - `search_files`: Pattern-based file search
 - `get_file_info`: File metadata
+- `code_search`: Recursive ripgrep based text and code search
 
 ### Edit Tools
 - `edit_block`: Apply surgical text replacements (best for changes <20% of file size)
