@@ -162,11 +162,13 @@ This project extends the MCP Filesystem Server to enable:
 
 Created as part of exploring Claude MCPs: https://youtube.com/live/TlbjFDbl5Us
 
+## DONE
+- **25-03-2025 Better code search** ([in progress](https://github.com/wonderwhy-er/ClaudeDesktopCommander/pull/17)) - Enhanced code exploration with context-aware results
+
 ## Work in Progress and TODOs
 
 The following features are currently being developed or planned:
 
-- **Better code search** ([in progress](https://github.com/wonderwhy-er/ClaudeDesktopCommander/pull/17)) - Enhanced code exploration with context-aware results
 - **Better configurations** ([in progress](https://github.com/wonderwhy-er/ClaudeDesktopCommander/pull/16)) - Improved settings for allowed paths, commands and shell environment
 - **Windows environment fixes** ([in progress](https://github.com/wonderwhy-er/ClaudeDesktopCommander/pull/13)) - Resolving issues specific to Windows platforms
 - **Linux improvements** ([in progress](https://github.com/wonderwhy-er/ClaudeDesktopCommander/pull/12)) - Enhancing compatibility with various Linux distributions
