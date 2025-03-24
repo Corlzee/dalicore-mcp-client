@@ -94,6 +94,14 @@ export async function searchCode(options: {
                 });
               });
             }
+
+            else if (result.type === 'context' && contextLines > 0) {
+              results.push({
+                file: result.data.path.text,
+                line: result.data.line_number,
+                match: result.data.lines.text.trim()
+              });
+            }
           } catch (e) {
             // Skip non-JSON output
             console.error('Error parsing ripgrep output:', e);
