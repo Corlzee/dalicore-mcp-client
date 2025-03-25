@@ -2,11 +2,19 @@ import fs from "fs/promises";
 import path from "path";
 import os from 'os';
 
-// Store allowed directories
+// Store allowed directories - temporarily allowing all paths
+// TODO: Make this configurable through a configuration file
+const allowedDirectories: string[] = [
+    "/" // Root directory - effectively allows all paths
+];
+
+// Original implementation commented out for future reference
+/*
 const allowedDirectories: string[] = [
     process.cwd(), // Current working directory
     os.homedir()   // User's home directory
 ];
+*/
 
 // Normalize all paths consistently
 function normalizePath(p: string): string {
@@ -22,6 +30,22 @@ function expandHome(filepath: string): string {
 
 // Security utilities
 export async function validatePath(requestedPath: string): Promise<string> {
+    // Temporarily allow all paths by just returning the resolved path
+    // TODO: Implement configurable path validation
+    const expandedPath = expandHome(requestedPath);
+    const absolute = path.isAbsolute(expandedPath)
+        ? path.resolve(expandedPath)
+        : path.resolve(process.cwd(), expandedPath);
+    
+    // Try to resolve real path for symlinks, but don't enforce restrictions
+    try {
+        return await fs.realpath(absolute);
+    } catch (error) {
+        // If can't resolve (e.g., file doesn't exist yet), return absolute path
+        return absolute;
+    }
+    
+    /* Original implementation commented out for future reference
     const expandedPath = expandHome(requestedPath);
     const absolute = path.isAbsolute(expandedPath)
         ? path.resolve(expandedPath)
@@ -59,6 +83,7 @@ export async function validatePath(requestedPath: string): Promise<string> {
             throw new Error(`Parent directory does not exist: ${parentDir}`);
         }
     }
+    */
 }
 
 // File operation tools
@@ -150,5 +175,5 @@ export async function getFileInfo(filePath: string): Promise<Record<string, any>
 }
 
 export function listAllowedDirectories(): string[] {
-    return allowedDirectories;
+    return ["/ (All paths are currently allowed)"];
 }
