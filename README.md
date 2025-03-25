@@ -176,6 +176,10 @@ The following features are currently being developed or planned:
 - **Support for SSH** - Remote server command execution
 - **Installation troubleshooting guide** - Comprehensive help for setup issues
 
+## Website
+
+Visit our official website at [https://desktopcommander.app/](https://desktopcommander.app/) for the latest information, documentation, and updates.
+
 ## Media
 Learn more about this project through these resources:
 
