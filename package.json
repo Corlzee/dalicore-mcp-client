@@ -4,8 +4,8 @@
   "description": "MCP server for terminal operations and file editing",
   "license": "MIT",
   "author": "Eduards Ruzga",
-  "homepage": "https://github.com/wonderwhy-er/ClaudeComputerCommander",
-  "bugs": "https://github.com/wonderwhy-er/ClaudeComputerCommander/issues",
+  "homepage": "https://github.com/wonderwhy-er/DesktopCommanderMCP",
+  "bugs": "https://github.com/wonderwhy-er/DesktopCommanderMCP/issues",
   "type": "module",
   "bin": {
     "desktop-commander": "dist/index.js",
