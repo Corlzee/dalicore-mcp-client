@@ -1,0 +1,61 @@
+/* FAQ Section */
+.faq {
+    padding: var(--section-padding);
+    background: var(--light-color);
+}
+
+.accordion {
+    max-width: 800px;
+    margin: 50px auto 0;
+}
+
+.accordion-item {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.accordion-header {
+    padding: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.accordion-body {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.accordion-body-inner {
+    padding-bottom: 20px;
+}
+
+.active .accordion-body {
+    max-height: 1000px;
+}
+
+/* Testimonials Section */
+.testimonials-grid {
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+.testimonial-card {
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.testimonial-card img {
+    width: 100%;
+}
