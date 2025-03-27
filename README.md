@@ -189,6 +189,10 @@ Learn more about this project through these resources:
 ### Video
 [Claude Desktop Commander Video Tutorial](https://www.youtube.com/watch?v=ly3bed99Dy8) - Watch how to set up and use the Commander effectively.
 
+### Publication at AnalyticsIndiaMag
+[![analyticsindiamag.png](testemonials%2Fanalyticsindiamag.png)
+This Developer Ditched Windsurf, Cursor Using Claude with MCPs](https://analyticsindiamag.com/ai-features/this-developer-ditched-windsurf-cursor-using-claude-with-mcps/)
+
 ### Community
 Join our [Discord server](https://discord.gg/7cbccwRp) to get help, share feedback, and connect with other users.
 
