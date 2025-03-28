@@ -2,6 +2,8 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ListPromptsRequestSchema,
   type CallToolRequest,
 } from "@modelcontextprotocol/sdk/types.js";
 import { zodToJsonSchema } from "zod-to-json-schema";
@@ -51,9 +53,27 @@ export const server = new Server(
   {
     capabilities: {
       tools: {},
+      resources: {},  // Add empty resources capability
+      prompts: {},    // Add empty prompts capability
     },
   },
 );
+
+// Add handler for resources/list method
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  // Return an empty list of resources
+  return {
+    resources: [],
+  };
+});
+
+// Add handler for prompts/list method
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+  // Return an empty list of prompts
+  return {
+    prompts: [],
+  };
+});
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
