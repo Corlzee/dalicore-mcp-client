@@ -98,6 +98,7 @@
                     <li><a href="#usage">Usage</a></li>
                     <li><a href="#media">Media</a></li>
                     <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#faq">FAQ</a></li>
                 </ul>
             </nav>
         </div>
@@ -490,66 +491,170 @@ npm run setup</pre>
                 <p>Find answers to common questions about Desktop Commander MCP</p>
             </div>
             
+            <!-- Add structured data to improve SEO -->
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": "What is Claude Desktop Commander?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Claude Desktop Commander is an MCP (Model Context Protocol) tool that allows Claude Desktop to access and control your computer's file system and terminal. It enables Claude to explore, read, and write files, execute commands, and manage processes - expanding Claude's capabilities beyond just conversation."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "How is this different from Cursor/Windsurf?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Unlike IDE-focused tools, Claude Desktop Commander provides a solution-centric approach that works with your entire OS, not just within a coding environment. Claude reads files in full rather than chunking them, can work across multiple projects simultaneously, and executes changes in one go rather than requiring constant review."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Do I need to pay for API credits?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "No. This tool works with Claude Desktop's standard Pro subscription ($20/month), not with API calls, so you won't incur additional costs beyond the subscription fee."
+                        }
+                    }
+                ]
+            }
+            </script>
+            
             <div class="accordion">
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>What is Desktop Commander MCP?</span>
+                        <span>What is Claude Desktop Commander?</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Desktop Commander MCP is an open-source tool that enables terminal command execution and file editing directly through Claude Desktop app, making it easier to work with your system and codebase through Claude's AI interface.</p>
+                            <p>Claude Desktop Commander is an MCP (Model Context Protocol) tool that allows Claude Desktop to access and control your computer's file system and terminal. It enables Claude to explore, read, and write files, execute commands, and manage processes - expanding Claude's capabilities beyond just conversation to become a comprehensive assistant that can work with your entire operating system.</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>Is Desktop Commander MCP free to use?</span>
+                        <span>How does it differ from coding tools like Cursor or Windsurf?</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Yes, Desktop Commander MCP is completely free and open-source. You can use it, modify it, and distribute it according to the terms of its license.</p>
+                            <p>Unlike tools like Cursor or Windsurf which are primarily designed as coding IDEs, Claude Desktop Commander works with Claude to provide a more flexible, solution-centric approach. Key differences include:</p>
+                            <ul>
+                                <li>Claude reads full files during exploration, ensuring it captures the complete structure</li>
+                                <li>Coding tools like Windsurf & Cursor chunk and index files, sometimes missing key relationships</li>
+                                <li>Claude generates and displays diagrams directly in chat</li>
+                                <li>Claude Desktop Commander allows you to work across your entire system, not just within coding environments</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
                 
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>Which operating systems are supported?</span>
+                        <span>How much does it cost to use Claude Desktop Commander?</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Desktop Commander MCP supports Windows, macOS, and Linux systems where Claude Desktop app is available. You need Node.js installed on your system to use it.</p>
+                            <p>Claude Desktop Commander itself is free and open-source. However, to use it, you need a Claude Pro subscription, which costs $20/month. There are no additional charges beyond this subscription fee, unlike Claude Code or other API-based tools that charge per token.</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>Is it secure to use?</span>
+                        <span>Which operating systems does it support?</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Desktop Commander MCP is designed with security in mind. It only executes commands that you explicitly ask Claude to run. However, as with any tool that can execute commands on your system, you should be careful about what commands you ask it to run.</p>
+                            <p>Claude Desktop Commander works with Windows, macOS, and Linux. Work is ongoing to improve Windows support, WSL integration, and enhance compatibility with various Linux distributions.</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span>Can I contribute to the project?</span>
+                        <span>Is it suitable for large codebases?</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Absolutely! We welcome contributions from developers of all skill levels. Check out our contribution guidelines on GitHub to get started. You can contribute code, documentation, bug reports, or feature ideas.</p>
+                            <p>Yes, users have reported success with very large codebases (one user mentioned 44k files with 11 million code lines). The tool can work across multiple projects and services simultaneously, making it suitable for complex development environments.</p>
                         </div>
                     </div>
                 </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>I'm having trouble installing or using the tool. Where can I get help?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Join our <a href="https://discord.gg/kQ27sNnZr7">Discord server</a> for community support, check the <a href="https://github.com/wonderwhy-er/ClaudeComputerCommander/issues">GitHub issues</a> for known problems, or review our <a href="https://github.com/wonderwhy-er/ClaudeComputerCommander/blob/main/FAQ.md">comprehensive FAQ</a> for troubleshooting tips. If you encounter a new issue, please consider <a href="https://github.com/wonderwhy-er/ClaudeComputerCommander/issues/new">opening a GitHub issue</a> with details about your problem.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>How does this compare to VSCode extensions like Cline?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Tools like Cline are great options that integrate directly with VSCode. The main differences are:</p>
+                            <ul>
+                                <li>Claude Desktop Commander works across your entire system, not just within the editor</li>
+                                <li>It can handle automation, terminal commands, and long-running processes</li>
+                                <li>It has a fixed cost with Claude Pro subscription rather than potential API charges</li>
+                                <li>It provides a more flexible approach not tied to a specific editor</li>
+                            </ul>
+                            <p>Many users employ both, using the right tool for different tasks.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- More prominent link to full FAQ -->
+            <div class="github-faq-container">
+                <a href="https://github.com/wonderwhy-er/ClaudeComputerCommander/blob/main/FAQ.md" target="_blank" class="github-faq-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    View our comprehensive FAQ document on GitHub for more detailed answers
+                </a>
+            </div>
+            
+            <!-- Feedback mechanism -->
+            <div class="feedback-container">
+                <h3>Didn't find what you were looking for?</h3>
+                <p>Help us improve our FAQ by suggesting new questions or improvements.</p>
+                <div class="question-form">
+                    <form action="https://github.com/wonderwhy-er/ClaudeComputerCommander/issues/new" method="get" target="_blank">
+                        <input type="hidden" name="template" value="faq_suggestion.md">
+                        <input type="hidden" name="title" value="FAQ Suggestion">
+                        <textarea name="body" placeholder="Suggest a question you'd like to see answered..."></textarea>
+                        <button type="submit" class="btn">Submit Suggestion</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Discord Community Link -->
+            <div class="discord-community-container">
+                <h3>Need help or have questions?</h3>
+                <p>Join our Discord community for real-time support, discussions, and updates.</p>
+                <a href="https://discord.gg/kQ27sNnZr7" target="_blank" class="discord-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#5865F2" stroke="none"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95 0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.02.06.03.09.02 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.03-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12 0 1.17-.83 2.12-1.89 2.12z"/></svg>
+                    Join our Discord Server
+                </a>
             </div>
         </div>
     </section>
