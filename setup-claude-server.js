@@ -73,7 +73,7 @@ try {
 
     // Prepare the new server config based on OS
     // Determine if running through npx or locally
-    const isNpx =  import.meta.url.endsWith('dist/setup-claude-server.js');
+    const isNpx = import.meta.url.endsWith('dist/setup-claude-server.js');
 
     const serverConfig = isNpx ? {
         "command": "npx",
@@ -87,27 +87,26 @@ try {
         ]
     };
 
-    // Add or update the terminal server config
+    // Initialize mcpServers if it doesn't exist
     if (!config.mcpServers) {
         config.mcpServers = {};
     }
     
-    config.mcpServers.desktopCommander = serverConfig;
-
-    // Add puppeteer server if not present
-    /*if (!config.mcpServers.puppeteer) {
-        config.mcpServers.puppeteer = {
-            "command": "npx",
-            "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
-        };
-    }*/
+    // Check if the old "desktopCommander" exists and remove it
+    if (config.mcpServers.desktopCommander) {
+        logToFile('Found old "desktopCommander" installation. Removing it...');
+        delete config.mcpServers.desktopCommander;
+    }
+    
+    // Add or update the terminal server config with the proper name "desktop-commander"
+    config.mcpServers["desktop-commander"] = serverConfig;
 
     // Write the updated config back
     writeFileSync(claudeConfigPath, JSON.stringify(config, null, 2), 'utf8');
     
-    logToFile('Successfully added MCP servers to Claude configuration!');
+    logToFile('Successfully added MCP server to Claude configuration!');
     logToFile(`Configuration location: ${claudeConfigPath}`);
-    logToFile('\nTo use the servers:\n1. Restart Claude if it\'s currently running\n2. The servers will be available in Claude\'s MCP server list');
+    logToFile('\nTo use the server:\n1. Restart Claude if it\'s currently running\n2. The server will be available as "desktop-commander" in Claude\'s MCP server list');
     
 } catch (error) {
     logToFile(`Error updating Claude configuration: ${error}`, true);

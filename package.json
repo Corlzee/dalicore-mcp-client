@@ -1,6 +1,6 @@
 {
   "name": "@wonderwhy-er/desktop-commander",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "MCP server for terminal operations and file editing",
   "license": "MIT",
   "author": "Eduards Ruzga",
@@ -31,7 +31,7 @@
     "link:local": "npm run build && npm link",
     "unlink:local": "npm unlink",
     "inspector": "npx @modelcontextprotocol/inspector dist/index.js",
-    "npm-publish": "npm publish"
+    "publish": "npm publish"
   },
   "publishConfig": {
     "access": "public"
