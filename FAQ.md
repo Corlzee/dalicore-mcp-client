@@ -247,13 +247,13 @@ Absolutely. While it excels at coding-related tasks, Claude Desktop Commander ca
 
 ### Is it safe to give Claude access to my file system?
 
-Claude Desktop Commander includes several safety features:
-- By default, it only accesses directories you explicitly allow
-- You can block specific commands
+Claude Desktop Commander operates within certain safety boundaries:
+
+- While file restrictions are currently disabled, Claude typically only works with files in folders you specifically direct it to
 - Claude can only perform actions that your user account has permission to do
 - No data is sent to external servers beyond what you share in Claude conversations
 
-That said, you should always review the actions Claude proposes before allowing it to make system changes, especially when working with important files or system configurations.
+> **Note:** Command blocking features are still in development. You should always review the actions Claude proposes before allowing it to make system changes, especially when working with important files or system configurations.
 
 ### Can I control which directories Claude can access?
 
