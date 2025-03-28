@@ -12,7 +12,7 @@ export class FilteredStdioServerTransport extends StdioServerTransport {
     process.stdout.write = function(buffer: any) {
       // Only intercept string output that doesn't look like JSON
       if (typeof buffer === 'string' && !buffer.trim().startsWith('{')) {
-        return process.stderr.write(buffer);
+        return true;//process.stderr.write(buffer);
       }
       return originalStdoutWrite.apply(process.stdout, arguments as any);
     };

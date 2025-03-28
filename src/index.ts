@@ -19,6 +19,9 @@ async function runSetup() {
 
 async function runServer() {
   try {
+    const transport = new FilteredStdioServerTransport();
+
+    console.log("start")
     // Check if first argument is "setup"
     if (process.argv[2] === 'setup') {
       await runSetup();
@@ -53,7 +56,7 @@ async function runServer() {
       process.exit(1);
     });
 
-    const transport = new FilteredStdioServerTransport();
+
     
     // Load blocked commands from config file
     await commandManager.loadBlockedCommands();
