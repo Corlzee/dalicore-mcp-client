@@ -23,6 +23,7 @@ Short version. Two key things. Terminal commands and diff based file editing.
 - [Work in Progress and TODOs](#work-in-progress-and-todos)
 - [Media links](#media)
 - [Testimonials](#testimonials)
+- [Frequently Asked Questions](#frequently-asked-questions)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -233,6 +234,29 @@ We welcome contributions from the community! Whether you've found a bug, have a 
 All contributions, big or small, are greatly appreciated!
 
 If you find this tool valuable for your workflow, please consider [supporting the project](https://www.buymeacoffee.com/wonderwhyer).
+
+## Frequently Asked Questions
+
+Here are answers to some common questions. For a more comprehensive FAQ, see our [detailed FAQ document](FAQ.md).
+
+### What is Claude Desktop Commander?
+It's an MCP tool that enables Claude Desktop to access your file system and terminal, turning Claude into a versatile assistant for coding, automation, codebase exploration, and more.
+
+### How is this different from Cursor/Windsurf?
+Unlike IDE-focused tools, Claude Desktop Commander provides a solution-centric approach that works with your entire OS, not just within a coding environment. Claude reads files in full rather than chunking them, can work across multiple projects simultaneously, and executes changes in one go rather than requiring constant review.
+
+### Do I need to pay for API credits?
+No. This tool works with Claude Desktop's standard Pro subscription ($20/month), not with API calls, so you won't incur additional costs beyond the subscription fee.
+
+### What are the most common use cases?
+- Exploring and understanding complex codebases
+- Generating diagrams and documentation
+- Automating tasks across your system
+- Working with multiple projects simultaneously
+- Making surgical code changes with precise control
+
+### I'm having trouble installing or using the tool. Where can I get help?
+Join our [Discord server](https://discord.gg/kQ27sNnZr7) for community support, check the [GitHub issues](https://github.com/wonderwhy-er/ClaudeComputerCommander/issues) for known problems, or review the [full FAQ](FAQ.md) for troubleshooting tips. If you encounter a new issue, please consider [opening a GitHub issue](https://github.com/wonderwhy-er/ClaudeComputerCommander/issues/new) with details about your problem.
 
 ## License
 
