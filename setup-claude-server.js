@@ -3,6 +3,7 @@ import { join } from 'path';
 import { readFileSync, writeFileSync, existsSync, appendFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { exec } from "node:child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,6 +30,9 @@ switch (os) {
 // Setup logging
 const LOG_FILE = join(__dirname, 'setup.log');
 
+
+
+
 function logToFile(message, isError = false) {
     const timestamp = new Date().toISOString();
     const logMessage = `${timestamp} - ${isError ? 'ERROR: ' : ''}${message}\n`;
@@ -49,6 +53,64 @@ function logToFile(message, isError = false) {
             message: `Failed to write to log file: ${err.message}`
         }) + '\n');
     }
+}
+
+async function execAsync(command) {
+    return new Promise((resolve, reject) => {
+      // Use PowerShell on Windows for better Unicode support and consistency
+      const actualCommand = isWindows
+      ? `cmd.exe /c ${command}` 
+      : command;
+        
+      exec(actualCommand, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve({ stdout, stderr });
+      });
+    });
+}
+
+async function restartClaude() {
+	try {
+        const platform = process.platform
+        switch (platform) {
+            case "win32":
+                // ignore errors on windows when claude is not running.
+                // just silently kill the process
+                try  {
+                    await execAsync(
+                        `taskkill /F /IM "Claude.exe"`,
+                    )
+                } catch {}
+                break;
+            case "darwin":
+                await execAsync(
+                    `killall "Claude"`,
+                )
+                break;
+            case "linux":
+                await execAsync(
+                    `pkill -f "claude"`,
+                )
+                break;
+        }
+		await new Promise((resolve) => setTimeout(resolve, 3000))
+
+		if (platform === "win32") {
+            // it will never start claude
+			// await execAsync(`start "" "Claude.exe"`)
+		} else if (platform === "darwin") {
+			await execAsync(`open -a "Claude"`)
+		} else if (platform === "linux") {
+			await execAsync(`claude`)
+		}
+
+		logToFile(`Claude has been restarted.`)
+	} catch (error) {
+		logToFile(`Failed to restart Claude: ${error}`, true)
+	}
 }
 
 // Check if config file exists and create default if not
@@ -121,6 +183,8 @@ try {
     logToFile(`Configuration location: ${claudeConfigPath}`);
     logToFile('\nTo use the server:\n1. Restart Claude if it\'s currently running\n2. The server will be available as "desktop-commander" in Claude\'s MCP server list');
     
+    await restartClaude();
+
 } catch (error) {
     logToFile(`Error updating Claude configuration: ${error}`, true);
     process.exit(1);

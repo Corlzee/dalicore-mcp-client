@@ -169,6 +169,7 @@ This project extends the MCP Filesystem Server to enable:
 Created as part of exploring Claude MCPs: https://youtube.com/live/TlbjFDbl5Us
 
 ## DONE
+- **28-03-2025 Fixed "Watching /" JSON error** - Implemented custom stdio transport to handle non-JSON messages and prevent server crashes
 - **25-03-2025 Better code search** ([merged](https://github.com/wonderwhy-er/ClaudeDesktopCommander/pull/17)) - Enhanced code exploration with context-aware results
 
 ## Work in Progress and TODOs
