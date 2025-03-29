@@ -195,7 +195,7 @@ Learn more about this project through these resources:
 This Developer Ditched Windsurf, Cursor Using Claude with MCPs](https://analyticsindiamag.com/ai-features/this-developer-ditched-windsurf-cursor-using-claude-with-mcps/)
 
 ### Community
-Join our [Discord server](https://discord.gg/7cbccwRp) to get help, share feedback, and connect with other users.
+Join our [Discord server](https://discord.gg/kQ27sNnZr7) to get help, share feedback, and connect with other users.
 
 ## Testimonials
 
