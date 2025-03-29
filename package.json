@@ -1,11 +1,11 @@
 {
   "name": "@wonderwhy-er/desktop-commander",
-  "version": "0.1.19",
+  "version": "0.1.24",
   "description": "MCP server for terminal operations and file editing",
   "license": "MIT",
   "author": "Eduards Ruzga",
-  "homepage": "https://github.com/wonderwhy-er/ClaudeComputerCommander",
-  "bugs": "https://github.com/wonderwhy-er/ClaudeComputerCommander/issues",
+  "homepage": "https://github.com/wonderwhy-er/DesktopCommanderMCP",
+  "bugs": "https://github.com/wonderwhy-er/DesktopCommanderMCP/issues",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
@@ -15,7 +15,9 @@
     "setup": "dist/setup-claude-server.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "logo.png",
+    "testemonials"
   ],
   "scripts": {
     "sync-version": "node scripts/sync-version.js",
@@ -31,7 +33,8 @@
     "test:watch": "nodemon test/test.js",
     "link:local": "npm run build && npm link",
     "unlink:local": "npm unlink",
-    "inspector": "npx @modelcontextprotocol/inspector dist/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector dist/index.js",
+    "publish": "npm publish"
   },
   "publishConfig": {
     "access": "public"
@@ -56,7 +59,8 @@
     "file-operations"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.0.1",
+    "@modelcontextprotocol/sdk": "^1.8.0",
+    "@vscode/ripgrep": "^1.15.9",
     "glob": "^10.3.10",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.23.5"

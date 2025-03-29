@@ -2,6 +2,8 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ListPromptsRequestSchema,
   type CallToolRequest,
 } from "@modelcontextprotocol/sdk/types.js";
 import { zodToJsonSchema } from "zod-to-json-schema";
@@ -23,6 +25,7 @@ import {
   SearchFilesArgsSchema,
   GetFileInfoArgsSchema,
   EditBlockArgsSchema,
+  SearchCodeArgsSchema,
 } from './tools/schemas.js';
 import { executeCommand, readOutput, forceTerminate, listSessions } from './tools/execute.js';
 import { listProcesses, killProcess } from './tools/process.js';
@@ -38,6 +41,7 @@ import {
   listAllowedDirectories,
 } from './tools/filesystem.js';
 import { parseEditBlock, performSearchReplace } from './tools/edit.js';
+import { searchTextInFiles } from './tools/search.js';
 
 import { VERSION } from './version.js';
 
@@ -49,9 +53,27 @@ export const server = new Server(
   {
     capabilities: {
       tools: {},
+      resources: {},  // Add empty resources capability
+      prompts: {},    // Add empty prompts capability
     },
   },
 );
+
+// Add handler for resources/list method
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  // Return an empty list of resources
+  return {
+    resources: [],
+  };
+});
+
+// Add handler for prompts/list method
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+  // Return an empty list of prompts
+  return {
+    prompts: [],
+  };
+});
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -176,6 +198,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           "Searches through all subdirectories from the starting path. " +
           "Only searches within allowed directories.",
         inputSchema: zodToJsonSchema(SearchFilesArgsSchema),
+      },
+      {
+        name: "search_code",
+        description:
+          "Search for text/code patterns within file contents using ripgrep. " +
+          "Fast and powerful search similar to VS Code search functionality. " +
+          "Supports regular expressions, file pattern filtering, and context lines. " +
+          "Only searches within allowed directories.",
+        inputSchema: zodToJsonSchema(SearchCodeArgsSchema),
       },
       {
         name: "get_file_info",
@@ -312,6 +343,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
           content: [{ type: "text", text: results.length > 0 ? results.join('\n') : "No matches found" }],
         };
       }
+      case "search_code": {
+        const parsed = SearchCodeArgsSchema.parse(args);
+        const results = await searchTextInFiles({
+          rootPath: parsed.path,
+          pattern: parsed.pattern,
+          filePattern: parsed.filePattern,
+          ignoreCase: parsed.ignoreCase,
+          maxResults: parsed.maxResults,
+          includeHidden: parsed.includeHidden,
+          contextLines: parsed.contextLines,
+        });
+
+        if (results.length === 0) {
+          return {
+            content: [{ type: "text", text: "No matches found" }],
+          };
+        }
+
+        // Format the results in a VS Code-like format
+        let currentFile = "";
+        let formattedResults = "";
+
+        results.forEach(result => {
+          if (result.file !== currentFile) {
+            formattedResults += `\n${result.file}:\n`;
+            currentFile = result.file;
+          }
+          formattedResults += `  ${result.line}: ${result.match}\n`;
+        });
+
+        return {
+          content: [{ type: "text", text: formattedResults.trim() }],
+        };
+      }
       case "get_file_info": {
         const parsed = GetFileInfoArgsSchema.parse(args);
         const info = await getFileInfo(parsed.path);
@@ -333,6 +398,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
           }],
         };
       }
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
