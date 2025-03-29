@@ -11,6 +11,7 @@ const __dirname = dirname(__filename);
 
 // Determine OS and set appropriate config path
 const os = platform();
+const isWindows = os === 'win32'; // Define isWindows variable
 let claudeConfigPath;
 
 switch (os) {
@@ -30,9 +31,6 @@ switch (os) {
 
 // Setup logging
 const LOG_FILE = join(__dirname, 'setup.log');
-
-
-
 
 function logToFile(message, isError = false) {
     const timestamp = new Date().toISOString();
@@ -127,7 +125,7 @@ if (!existsSync(claudeConfigPath)) {
     
     // Create default config with shell based on platform
     const defaultConfig = {
-        "serverConfig": os === 'win32'
+        "serverConfig": isWindows
             ? {
                 "command": "cmd.exe",
                 "args": ["/c"]
@@ -149,9 +147,9 @@ export default async function setup() {
         const configData = readFileSync(claudeConfigPath, 'utf8');
         const config = JSON.parse(configData);
 
-    // Prepare the new server config based on OS
-    // Determine if running through npx or locally
-    const isNpx = import.meta.url.endsWith('dist/setup-claude-server.js');
+        // Prepare the new server config based on OS
+        // Determine if running through npx or locally
+        const isNpx = import.meta.url.includes('node_modules');
 
         // Fix Windows path handling for npx execution
         let serverConfig;
@@ -173,32 +171,32 @@ export default async function setup() {
             };
         }
 
-    // Initialize mcpServers if it doesn't exist
-    if (!config.mcpServers) {
-        config.mcpServers = {};
+        // Initialize mcpServers if it doesn't exist
+        if (!config.mcpServers) {
+            config.mcpServers = {};
+        }
+
+        // Check if the old "desktopCommander" exists and remove it
+        if (config.mcpServers.desktopCommander) {
+            logToFile('Found old "desktopCommander" installation. Removing it...');
+            delete config.mcpServers.desktopCommander;
+        }
+
+        // Add or update the terminal server config with the proper name "desktop-commander"
+        config.mcpServers["desktop-commander"] = serverConfig;
+
+        // Write the updated config back
+        writeFileSync(claudeConfigPath, JSON.stringify(config, null, 2), 'utf8');
+
+        logToFile('Successfully added MCP server to Claude configuration!');
+        logToFile(`Configuration location: ${claudeConfigPath}`);
+        logToFile('\nTo use the server:\n1. Restart Claude if it\'s currently running\n2. The server will be available as "desktop-commander" in Claude\'s MCP server list');
+
+        await restartClaude();
+    } catch (error) {
+        logToFile(`Error updating Claude configuration: ${error}`, true);
+        process.exit(1);
     }
-
-    // Check if the old "desktopCommander" exists and remove it
-    if (config.mcpServers.desktopCommander) {
-        logToFile('Found old "desktopCommander" installation. Removing it...');
-        delete config.mcpServers.desktopCommander;
-    }
-
-    // Add or update the terminal server config with the proper name "desktop-commander"
-    config.mcpServers["desktop-commander"] = serverConfig;
-
-    // Write the updated config back
-    writeFileSync(claudeConfigPath, JSON.stringify(config, null, 2), 'utf8');
-
-    logToFile('Successfully added MCP server to Claude configuration!');
-    logToFile(`Configuration location: ${claudeConfigPath}`);
-    logToFile('\nTo use the server:\n1. Restart Claude if it\'s currently running\n2. The server will be available as "desktop-commander" in Claude\'s MCP server list');
-
-    await restartClaude();
-
-} catch (error) {
-    logToFile(`Error updating Claude configuration: ${error}`, true);
-    process.exit(1);
 }
 
 // Allow direct execution
