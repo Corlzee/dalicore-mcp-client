@@ -7,6 +7,9 @@
   "homepage": "https://github.com/wonderwhy-er/ClaudeComputerCommander",
   "bugs": "https://github.com/wonderwhy-er/ClaudeComputerCommander/issues",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "bin": {
     "desktop-commander": "dist/index.js",
     "setup": "dist/setup-claude-server.js"
@@ -22,7 +25,7 @@
     "build": "tsc && shx cp setup-claude-server.js dist/ && shx chmod +x dist/*.js",
     "watch": "tsc --watch",
     "start": "node dist/index.js",
-    "setup": "npm install && npm run build && node --experimental-network-imports setup-claude-server.js",
+    "setup": "npm install && npm run build && node setup-claude-server.js",
     "prepare": "npm run build",
     "test": "node test/test.js",
     "test:watch": "nodemon test/test.js",
