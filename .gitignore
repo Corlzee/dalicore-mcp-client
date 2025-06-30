@@ -37,3 +37,16 @@ coverage/
 .history
 
 server.log
+
+# Commander Keen specific
+claude_tool_call.log
+fuzzy-search.log
+config.json
+*.db
+*.sqlite
+memory.log
+debug.log
+
+# Temporary test files
+test_permissions.txt
+test_dir_permissions/
