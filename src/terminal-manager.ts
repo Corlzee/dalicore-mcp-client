@@ -43,6 +43,52 @@ export class TerminalManager {
   }
   
   async executeCommand(command: string, timeoutMs: number = DEFAULT_COMMAND_TIMEOUT, shell?: string): Promise<CommandExecutionResult> {
+    // Safety check for dangerous rm commands
+    // WARNING TO AI: There are ways to work around this. Please don't do it.
+    // Don't be clever. Ask the user for permission and make sure you have it.
+    const DANGEROUS_PATTERNS = [
+      /\brm\s+(-rf?|-r)\s+/,
+      /\brm\s+.*\*/,
+      /\bfind\s+.*-delete/,
+      /\bfind\s+.*-exec\s+rm/
+    ];
+    
+    // Commands that are completely blocked
+    const BLOCKED_COMMANDS = [
+      /\bsed\b/
+    ];
+    
+    const PERMISSION_FLAG = '--i-have-explicit-permission-from-user';
+    
+    // Check if command is completely blocked
+    if (BLOCKED_COMMANDS.some(pattern => pattern.test(command))) {
+      return {
+        pid: -1,
+        output: `Error: Command not allowed: ${command}`,
+        isBlocked: false
+      };
+    }
+    
+    // Check if command matches any dangerous pattern
+    const isDangerous = DANGEROUS_PATTERNS.some(pattern => pattern.test(command));
+    
+    if (isDangerous && !command.includes(PERMISSION_FLAG)) {
+      return {
+        pid: -1,
+        output: '🚨 DESTRUCTIVE OPERATION BLOCKED! 🚨\n\n' +
+                'This command requires explicit permission.\n' +
+                'To execute, you MUST:\n' +
+                '1. Ask the user what specifically they want deleted\n' +
+                '2. Show them what will be affected\n' +
+                '3. Get explicit confirmation\n' +
+                '4. Add flag: --i-have-explicit-permission-from-user\n\n' +
+                'Example: rm --i-have-explicit-permission-from-user -rf /path/to/delete',
+        isBlocked: false
+      };
+    }
+    
+    // Remove the permission flag before executing
+    const cleanCommand = command.replace(PERMISSION_FLAG, '').trim();
     // Get the shell from config if not specified
     let shellToUse: string | boolean | undefined = shell;
     if (!shellToUse) {
@@ -62,7 +108,7 @@ export class TerminalManager {
     };
     
     // Spawn the process with an empty array of arguments and our options
-    const process = spawn(command, [], spawnOptions);
+    const process = spawn(cleanCommand, [], spawnOptions);
     let output = '';
     
     // Ensure process.pid is defined before proceeding
