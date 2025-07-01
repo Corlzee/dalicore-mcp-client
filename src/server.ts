@@ -600,6 +600,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     inputSchema: zodToJsonSchema(MemoryQueryArgsSchema),
                 },
                 {
+                    name: "show_context", 
+                    description: `
+                        Show full context from memory system.
+                        
+                        Returns comprehensive session information including:
+                        - Journal entries
+                        - Operations performed
+                        - Files touched
+                        - Decisions and blockers
+                        
+                        Use sparingly - returns large amount of data.
+                        
+                        ${CMD_PREFIX_DESCRIPTION}`,
+                    inputSchema: zodToJsonSchema(MemoryQueryArgsSchema),
+                },
+                {
                     name: "undo_last_operation",
                     description: `
                         Attempt to undo the last file operation (experimental).
@@ -753,6 +769,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
                 
             case "show_blockers":
                 return await handlers.handleShowBlockers(args);
+                
+            case "show_context":
+                return await handlers.handleShowContext(args);
                 
             case "undo_last_operation":
                 return await handlers.handleUndoLastOperation(args);

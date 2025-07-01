@@ -4,6 +4,7 @@ import {
   whatShouldIHaveDone,
   showDecisions,
   showBlockers,
+  showContext,
   undoLastOperation
 } from '../tools/memory.js';
 
@@ -13,5 +14,6 @@ export {
   whatShouldIHaveDone as handleWhatShouldIHaveDone,
   showDecisions as handleShowDecisions,
   showBlockers as handleShowBlockers,
+  showContext as handleShowContext,
   undoLastOperation as handleUndoLastOperation
 };
