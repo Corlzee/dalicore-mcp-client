@@ -31,6 +31,17 @@ async function getAllowedDirs(): Promise<string[]> {
     return [];
 }
 
+// Get read-only directories from configuration
+async function getReadOnlyDirs(): Promise<string[]> {
+    try {
+        const config = await configManager.getConfig();
+        return config.readOnlyDirectories || [];
+    } catch (error) {
+        console.error('Failed to get read-only directories:', error);
+        return [];
+    }
+}
+
 // Normalize all paths consistently
 function normalizePath(p: string): string {
     return path.normalize(expandHome(p)).toLowerCase();
@@ -78,7 +89,10 @@ async function validateParentDirectories(directoryPath: string): Promise<boolean
 async function isPathAllowed(pathToCheck: string): Promise<boolean> {
     // If root directory is allowed, all paths are allowed
     const allowedDirectories = await getAllowedDirs();
-    if (allowedDirectories.includes('/') || allowedDirectories.length === 0) {
+    const readOnlyDirectories = await getReadOnlyDirs();
+    const allAccessibleDirs = [...allowedDirectories, ...readOnlyDirectories];
+    
+    if (allAccessibleDirs.includes('/') || allowedDirectories.length === 0) {
         return true;
     }
 
@@ -87,8 +101,8 @@ async function isPathAllowed(pathToCheck: string): Promise<boolean> {
         normalizedPathToCheck = normalizedPathToCheck.slice(0, -1);
     }
 
-    // Check if the path is within any allowed directory
-    const isAllowed = allowedDirectories.some(allowedDir => {
+    // Check if the path is within any allowed or read-only directory
+    const isAllowed = allAccessibleDirs.some(allowedDir => {
         let normalizedAllowedDir = normalizePath(allowedDir);
         if(normalizedAllowedDir.slice(-1) === path.sep) {
             normalizedAllowedDir = normalizedAllowedDir.slice(0, -1);
@@ -116,6 +130,39 @@ async function isPathAllowed(pathToCheck: string): Promise<boolean> {
     });
 
     return isAllowed;
+}
+
+/**
+ * Checks if a path is within a read-only directory
+ * 
+ * @param pathToCheck Path to check
+ * @returns boolean True if path is in a read-only directory
+ */
+export async function isPathReadOnly(pathToCheck: string): Promise<boolean> {
+    const readOnlyDirectories = await getReadOnlyDirs();
+    
+    if (readOnlyDirectories.length === 0) {
+        return false;
+    }
+
+    let normalizedPathToCheck = normalizePath(pathToCheck);
+    if(normalizedPathToCheck.slice(-1) === path.sep) {
+        normalizedPathToCheck = normalizedPathToCheck.slice(0, -1);
+    }
+
+    // Check if the path is within any read-only directory
+    const isReadOnly = readOnlyDirectories.some(readOnlyDir => {
+        let normalizedReadOnlyDir = normalizePath(readOnlyDir);
+        if(normalizedReadOnlyDir.slice(-1) === path.sep) {
+            normalizedReadOnlyDir = normalizedReadOnlyDir.slice(0, -1);
+        }
+
+        // Check if path is exactly the read-only directory or a subdirectory
+        return normalizedPathToCheck === normalizedReadOnlyDir || 
+               normalizedPathToCheck.startsWith(normalizedReadOnlyDir + path.sep);
+    });
+
+    return isReadOnly;
 }
 
 /**
@@ -682,6 +729,11 @@ function splitLinesPreservingEndings(content: string): string[] {
 
 export async function writeFile(filePath: string, content: string, mode: 'rewrite' | 'append' = 'rewrite'): Promise<void> {
     const validPath = await validatePath(filePath);
+    
+    // Check if path is in a read-only directory
+    if (await isPathReadOnly(validPath)) {
+        throw new Error(`Cannot write to read-only directory: ${filePath}`);
+    }
 
     // Get file extension for telemetry
     const fileExtension = path.extname(validPath).toLowerCase();
@@ -740,6 +792,12 @@ export async function readMultipleFiles(paths: string[]): Promise<MultiFileResul
 
 export async function createDirectory(dirPath: string): Promise<void> {
     const validPath = await validatePath(dirPath);
+    
+    // Check if path is in a read-only directory
+    if (await isPathReadOnly(validPath)) {
+        throw new Error(`Cannot create directory in read-only location: ${dirPath}`);
+    }
+    
     await fs.mkdir(validPath, { recursive: true });
 }
 
@@ -752,6 +810,17 @@ export async function listDirectory(dirPath: string): Promise<string[]> {
 export async function moveFile(sourcePath: string, destinationPath: string): Promise<void> {
     const validSourcePath = await validatePath(sourcePath);
     const validDestPath = await validatePath(destinationPath);
+    
+    // Check if source is in a read-only directory (can't move from read-only)
+    if (await isPathReadOnly(validSourcePath)) {
+        throw new Error(`Cannot move file from read-only location: ${sourcePath}`);
+    }
+    
+    // Check if destination is in a read-only directory
+    if (await isPathReadOnly(validDestPath)) {
+        throw new Error(`Cannot move file to read-only location: ${destinationPath}`);
+    }
+    
     await fs.rename(validSourcePath, validDestPath);
 }
 

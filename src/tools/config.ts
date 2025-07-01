@@ -62,7 +62,9 @@ export async function setConfigValue(args: unknown) {
       }
 
       // Special handling for known array configuration keys
-      if ((parsed.data.key === 'allowedDirectories' || parsed.data.key === 'blockedCommands') && 
+      if ((parsed.data.key === 'allowedDirectories' || 
+           parsed.data.key === 'readOnlyDirectories' || 
+           parsed.data.key === 'blockedCommands') && 
           !Array.isArray(valueToStore)) {
         if (typeof valueToStore === 'string') {
           try {
