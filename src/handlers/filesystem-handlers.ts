@@ -15,6 +15,7 @@ import {ServerResult} from '../types.js';
 import {withTimeout} from '../utils/withTimeout.js';
 import {createErrorResponse} from '../error-handlers.js';
 import {configManager} from '../config-manager.js';
+import {onFileWrite} from '../tools/cortex-integration.js';
 
 import {
     ReadFileArgsSchema,
@@ -174,6 +175,14 @@ export async function handleWriteFile(args: unknown): Promise<ServerResult> {
 
         // Pass the mode parameter to writeFile
         await writeFile(parsed.path, parsed.content, parsed.mode);
+        
+        // Trigger Cortex integration for AIJOURNAL files
+        try {
+            await onFileWrite(parsed.path, parsed.content);
+        } catch (cortexError) {
+            console.error('[Cortex] Integration error:', cortexError);
+            // Don't fail the write operation if Cortex fails
+        }
         
         // Provide more informative message based on mode
         const modeMessage = parsed.mode === 'append' ? 'appended to' : 'wrote to';
