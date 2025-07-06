@@ -9,7 +9,7 @@ import { readFile } from './filesystem.js';
  */
 
 // Configuration
-const CORTEX_BINARY = '/home/konverts/projects/cortex/target/debug/cortex_memory';
+const CORTEX_BINARY = '/home/konverts/bin/cortex';
 const AIJOURNAL_PATTERN = /AIJOURNAL\.md$/i;
 
 // Memory marker patterns to extract from journal
