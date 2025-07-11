@@ -10,6 +10,7 @@ interface CompletedSession {
   exitCode: number | null;
   startTime: Date;
   endTime: Date;
+  completionShown?: boolean;
 }
 
 export class TerminalManager {
@@ -43,6 +44,21 @@ export class TerminalManager {
   }
   
   async executeCommand(command: string, timeoutMs: number = DEFAULT_COMMAND_TIMEOUT, shell?: string): Promise<CommandExecutionResult> {
+    // Universal git status enhancement
+    const GIT_STATUS_PATTERN = /\bgit\s+status\b/;
+    if (GIT_STATUS_PATTERN.test(command)) {
+      // Extract the working directory from the command if it includes 'cd'
+      let workingDir = global.process.cwd();
+      const cdPattern = /cd\s+([^&;]+)\s*&&/;
+      const cdMatch = command.match(cdPattern);
+      if (cdMatch) {
+        workingDir = cdMatch[1].trim();
+      }
+      
+      const wrapperPath = '/home/konverts/projects/Commander-Keen/scripts/universal-git-status-wrapper.sh';
+      command = command.replace(/\bgit\s+status\b/, `bash ${wrapperPath} "${workingDir}" "git status"`);
+    }
+    
     // Safety check for dangerous rm commands
     // WARNING TO AI: There are ways to work around this. Please don't do it.
     // Don't be clever. Ask the user for permission and make sure you have it.
@@ -193,9 +209,13 @@ export class TerminalManager {
     // Then check completed sessions
     const completedSession = this.completedSessions.get(pid);
     if (completedSession) {
-      // Format completion message with exit code and runtime
-      const runtime = (completedSession.endTime.getTime() - completedSession.startTime.getTime()) / 1000;
-      return `Process completed with exit code ${completedSession.exitCode}\nRuntime: ${runtime}s\nFinal output:\n${completedSession.output}`;
+      // Only return completion info if not already shown
+      if (!completedSession.completionShown) {
+        completedSession.completionShown = true;
+        const runtime = (completedSession.endTime.getTime() - completedSession.startTime.getTime()) / 1000;
+        return `Process completed with exit code ${completedSession.exitCode}\nRuntime: ${runtime}s`;
+      }
+      return null; // Already shown completion
     }
 
     return null;
