@@ -179,6 +179,35 @@ if [[ "$CWD" == *"dalicore"* ]]; then
     echo "→ Journal: /home/konverts/projects/dalicore/AIJOURNAL.md"
     echo "→ Architecture: /home/konverts/projects/dalicore/ARCHITECTURE.md"
     echo "════════════════════════════════════════════════════════════════════"
+    
+    # Run documentation verification
+    echo ""
+    echo "📋 DOCUMENTATION VERIFICATION"
+    echo "════════════════════════════════════════════════════════════════════"
+    
+    VERIFY_SCRIPT="$CWD/scripts/verify_docs.sh"
+    if [ -f "$VERIFY_SCRIPT" ] && [ -x "$VERIFY_SCRIPT" ]; then
+        # Run verification and capture output
+        VERIFY_OUTPUT=$("$VERIFY_SCRIPT" 2>&1)
+        
+        # Check if there are any issues (looking for red X marks)
+        if echo "$VERIFY_OUTPUT" | grep -q "\[0;31m✗\|Found [0-9]* issues"; then
+            # Issues found - show summary
+            echo "⚠️  Documentation issues detected!"
+            echo ""
+            # Extract just the failures
+            echo "$VERIFY_OUTPUT" | grep "\[0;31m✗" | sed 's/\[0;31m//' | sed 's/\[0m//'
+            echo ""
+            # Get the summary line
+            echo "$VERIFY_OUTPUT" | grep "Found [0-9]* issues" | sed 's/\[0;31m//' | sed 's/\[0m//'
+        else
+            # All good
+            echo "✅ All documentation verified - no drift detected!"
+        fi
+    else
+        echo "⚠️  Verification script not found or not executable"
+    fi
+    echo "════════════════════════════════════════════════════════════════════"
 fi
 
 # Cortex session management (for any project with clean working tree)
