@@ -42,34 +42,52 @@ TOOL_STATUS=""
 # Check 1: Memory System
 CORTEX_CHECK=$(command -v cortex > /dev/null && echo 'OK Cortex' || echo 'NO Cortex')
 
-# Check 2: SurrealDB instances (with database identification)
-SURREAL_DETAILS=$(ps aux | grep -E "[s]urreal start" | while read line; do
-    PORT=$(echo "$line" | grep -oE ":(8[0-9]{3}|9[0-9]{3})" | tr -d ':')
+# Check 2: Dalicore Services Status
+SERVICE_STATUS=""
+if [[ "$CWD" == *"dalicore"* ]]; then
+    # Check all dalicore and alien services
+    SERVICE_LIST=$(systemctl list-units --type=service --all --no-legend | grep -E "(dalicore-|alien-)" | awk '{print $1, $3}')
     
-    # Try to identify the database from the command
-    if echo "$line" | grep -q "dalicore.db"; then
-        echo "dalicore:$PORT"
-    elif echo "$line" | grep -q "testing.db"; then
-        echo "testing:$PORT"
-    elif echo "$line" | grep -q "peppal.db"; then
-        echo "peppal:$PORT"
-    elif echo "$line" | grep -q "cortex.db"; then
-        echo "cortex:$PORT"
-    else
-        # Try to extract DB name from file path or rocksdb path
-        DB_NAME=$(echo "$line" | grep -oE "file://[^ ]+|rocksdb://[^ ]+" | sed 's/.*\///' | sed 's/\.db$//')
-        if [ -n "$DB_NAME" ]; then
-            echo "$DB_NAME:$PORT"
+    if [ -n "$SERVICE_LIST" ]; then
+        while IFS=' ' read -r service_name status; do
+            # Get short name without .service
+            short_name=$(echo "$service_name" | sed 's/\.service$//' | sed 's/dalicore-//' | sed 's/alien-//')
+            
+            case "$status" in
+                active)
+                    SERVICE_STATUS="$SERVICE_STATUS ✓$short_name"
+                    ;;
+                inactive|dead)
+                    # Don't show inactive watchers
+                    if [[ ! "$service_name" =~ -watcher\.service$ ]]; then
+                        SERVICE_STATUS="$SERVICE_STATUS ✗$short_name"
+                    fi
+                    ;;
+                activating)
+                    SERVICE_STATUS="$SERVICE_STATUS ↻$short_name"
+                    ;;
+                failed)
+                    SERVICE_STATUS="$SERVICE_STATUS ⚠$short_name"
+                    ;;
+            esac
+        done <<< "$SERVICE_LIST"
+        
+        if [ -n "$SERVICE_STATUS" ]; then
+            SERVICE_CHECK="Services:$SERVICE_STATUS"
         else
-            echo "unknown:$PORT"
+            SERVICE_CHECK="Services: all inactive"
         fi
+    else
+        SERVICE_CHECK="Services: none found"
     fi
-done | tr '\n' ', ' | sed 's/,$//')
-
-if [ -n "$SURREAL_DETAILS" ]; then
-    SURREAL_CHECK="OK SurrealDB ($SURREAL_DETAILS)"
 else
-    SURREAL_CHECK="NO SurrealDB"
+    # Not in dalicore, check for SurrealDB processes
+    SURREAL_COUNT=$(ps aux | grep -E "[s]urreal start" | wc -l)
+    if [ "$SURREAL_COUNT" -gt 0 ]; then
+        SERVICE_CHECK="SurrealDB: $SURREAL_COUNT instance(s) running"
+    else
+        SERVICE_CHECK="SurrealDB: not running"
+    fi
 fi
 
 # Check 3: Development Runtimes
@@ -81,12 +99,13 @@ PYTHON_CHECK=$(command -v python3 > /dev/null && echo 'OK Python' || echo 'NO Py
 RIPGREP_CHECK=$(command -v rg > /dev/null && echo 'OK ripgrep' || echo 'NO ripgrep')
 
 # Format output for substitution
-TOOL_STATUS_FORMATTED="Memory: ${CORTEX_CHECK}  ${SURREAL_CHECK}\nLang:   ${RUST_CHECK}  ${NODE_CHECK}  ${PYTHON_CHECK}\nTools:  ${RIPGREP_CHECK}"
+TOOL_STATUS_FORMATTED="Memory: ${CORTEX_CHECK}\nLang:   ${RUST_CHECK}  ${NODE_CHECK}  ${PYTHON_CHECK}\nTools:  ${RIPGREP_CHECK}\n${SERVICE_CHECK}"
 
 # Display tool status
-echo "Memory: ${CORTEX_CHECK}  ${SURREAL_CHECK}"
+echo "Memory: ${CORTEX_CHECK}"
 echo "Lang:   ${RUST_CHECK}  ${NODE_CHECK}  ${PYTHON_CHECK}"
 echo "Tools:  ${RIPGREP_CHECK}"
+echo "${SERVICE_CHECK}"
 echo ""
 
 # Look for constitution files in order of precedence

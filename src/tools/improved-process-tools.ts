@@ -33,6 +33,37 @@ export async function startProcess(args: unknown): Promise<ServerResult> {
 
   const isAllowed = await commandManager.validateCommand(parsed.data.command);
   if (!isAllowed) {
+    // Special handling for sudo commands
+    const baseCommand = parsed.data.command.trim().split(' ')[0].toLowerCase();
+    if (baseCommand === 'sudo') {
+      return {
+        content: [{ 
+          type: "text", 
+          text: `🚨 SUDO COMMAND BLOCKED! 🚨
+
+I need to run a sudo command but don't have permission.
+
+The command I tried to run:
+\`\`\`bash
+${parsed.data.command}
+\`\`\`
+
+**What you need to do:**
+1. Review the command above carefully
+2. If you approve, please run it in your terminal yourself
+3. Then tell me the result so I can continue
+
+**Alternative:** For Dalicore services, I can use these safe commands without sudo:
+- \`/home/konverts/projects/dalicore/bin/dalicore-service <action> <service>\`
+- \`/home/konverts/projects/dalicore/bin/dalicore-restart <name>\`
+- \`/home/konverts/projects/dalicore/bin/dalicore-status\`
+
+Should I use one of the wrapper commands instead, or would you like to run the sudo command yourself?` 
+        }],
+        isError: true,
+      };
+    }
+    
     return {
       content: [{ type: "text", text: `Error: Command not allowed: ${parsed.data.command}` }],
       isError: true,
