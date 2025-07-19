@@ -1,8 +1,14 @@
 import { spawn } from 'child_process';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 import { TerminalSession, CommandExecutionResult, ActiveSession } from './types.js';
 import { DEFAULT_COMMAND_TIMEOUT } from './config.js';
 import { configManager } from './config-manager.js';
 import {capture} from "./utils/capture.js";
+
+// ESM __dirname workaround
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 interface CompletedSession {
   pid: number;
@@ -55,7 +61,7 @@ export class TerminalManager {
         workingDir = cdMatch[1].trim();
       }
       
-      const wrapperPath = '/home/konverts/projects/Commander-Keen/scripts/universal-git-status-wrapper.sh';
+      const wrapperPath = path.join(__dirname, '..', 'scripts', 'universal-git-status-wrapper.sh');
       command = command.replace(/\bgit\s+status\b/, `bash ${wrapperPath} "${workingDir}" "git status"`);
     }
     

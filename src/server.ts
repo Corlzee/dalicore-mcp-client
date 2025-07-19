@@ -35,10 +35,6 @@ import {
     SetConfigValueArgsSchema,
 } from "./tools/schemas.js";
 
-import {
-    MemoryQueryArgsSchema,
-    UndoArgsSchema
-} from "./tools/memory.js";
 import {getConfig, setConfigValue} from './tools/config.js';
 import {trackToolCall} from './utils/trackTools.js';
 
@@ -530,103 +526,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     inputSchema: zodToJsonSchema(KillProcessArgsSchema),
                 },
                 
-                // Memory tools
-                {
-                    name: "show_my_history",
-                    description: `
-                        Show your recent operations from the AI memory system.
-                        
-                        Displays the last N operations you've performed, including:
-                        - File reads/writes
-                        - Commands executed
-                        - Edits made
-                        
-                        Useful for understanding what you've been doing.
-                        
-                        ${CMD_PREFIX_DESCRIPTION}`,
-                    inputSchema: zodToJsonSchema(MemoryQueryArgsSchema),
-                },
-                {
-                    name: "what_did_i_do",
-                    description: `
-                        Show all operations performed on a specific file.
-                        
-                        Tracks the history of:
-                        - Reads
-                        - Writes
-                        - Edits
-                        - Related journal entries
-                        
-                        Helps understand the evolution of a file.
-                        
-                        ${CMD_PREFIX_DESCRIPTION}`,
-                    inputSchema: zodToJsonSchema(MemoryQueryArgsSchema),
-                },
-                {
-                    name: "what_should_i_have_done",
-                    description: `
-                        🤔 Hindsight analysis - learn from past mistakes.
-                        
-                        Searches your journal for:
-                        - SHOULDVE entries
-                        - WRONG_ASSUMPTION entries
-                        - DIDNT_KNOW entries
-                        - PREVENTION suggestions
-                        - REWORK situations
-                        
-                        Use this to identify patterns of mistakes and improve future performance.
-                        
-                        ${CMD_PREFIX_DESCRIPTION}`,
-                    inputSchema: zodToJsonSchema(MemoryQueryArgsSchema),
-                },
-                {
-                    name: "show_decisions", 
-                    description: `
-                        Show recent decisions made during development.
-                        
-                        Helps answer "Why did I choose this approach?"
-                        
-                        ${CMD_PREFIX_DESCRIPTION}`,
-                    inputSchema: zodToJsonSchema(MemoryQueryArgsSchema),
-                },
-                {
-                    name: "show_blockers",
-                    description: `
-                        Show current unresolved blockers.
-                        
-                        Lists issues that are preventing progress and need resolution.
-                        
-                        ${CMD_PREFIX_DESCRIPTION}`,
-                    inputSchema: zodToJsonSchema(MemoryQueryArgsSchema),
-                },
-                {
-                    name: "show_context", 
-                    description: `
-                        Show full context from memory system.
-                        
-                        Returns comprehensive session information including:
-                        - Journal entries
-                        - Operations performed
-                        - Files touched
-                        - Decisions and blockers
-                        
-                        Use sparingly - returns large amount of data.
-                        
-                        ${CMD_PREFIX_DESCRIPTION}`,
-                    inputSchema: zodToJsonSchema(MemoryQueryArgsSchema),
-                },
-                {
-                    name: "undo_last_operation",
-                    description: `
-                        Attempt to undo the last file operation (experimental).
-                        
-                        Currently provides guidance on how to manually undo changes.
-                        Future versions may support automatic rollback.
-                        
-                        ${CMD_PREFIX_DESCRIPTION}`,
-                    inputSchema: zodToJsonSchema(UndoArgsSchema),
-                },
-                
                 // 🚨🚨🚨 CRITICAL TOOL SELECTION GUIDANCE 🚨🚨🚨
                 //
                 // FOR LOCAL FILE ANALYSIS (CSV, JSON, logs, data files):
@@ -753,28 +652,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
 
             case "edit_block":
                 return await handlers.handleEditBlock(args);
-
-            // Memory tools
-            case "show_my_history":
-                return await handlers.handleShowMyHistory(args);
-                
-            case "what_did_i_do":
-                return await handlers.handleWhatDidIDo(args);
-                
-            case "what_should_i_have_done":
-                return await handlers.handleWhatShouldIHaveDone(args);
-                
-            case "show_decisions":
-                return await handlers.handleShowDecisions(args);
-                
-            case "show_blockers":
-                return await handlers.handleShowBlockers(args);
-                
-            case "show_context":
-                return await handlers.handleShowContext(args);
-                
-            case "undo_last_operation":
-                return await handlers.handleUndoLastOperation(args);
 
             default:
                 capture('server_unknown_tool', {name});
