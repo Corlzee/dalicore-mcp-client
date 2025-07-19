@@ -166,6 +166,28 @@ echo ""
 
 # Project-specific features
 if [[ "$CWD" == *"dalicore"* ]]; then
+    # Check if cargo watch is running for dalicore
+    CARGO_WATCH_RUNNING=$(ps aux | grep -E "cargo.*watch.*dalicore" | grep -v grep | wc -l)
+    
+    if [ "$CARGO_WATCH_RUNNING" -eq 0 ]; then
+        echo ""
+        echo "⚠️  DEVELOPMENT WATCH NOT RUNNING ⚠️"
+        echo ""
+        echo "Hey! You forgot to start the auto-rebuild watcher."
+        echo "Your services won't rebuild when you save files!"
+        echo ""
+        echo "Run this in another terminal:"
+        echo "  dalicore-watch"
+        echo ""
+        echo "Or if you haven't set up the alias:"
+        echo "  cargo watch -x \"build --release\" -s \"sudo systemctl restart dalicore-api\""
+        echo ""
+    else
+        # Add indicator to tool status that watch is running
+        echo "Dev Watch: ✓ Auto-rebuild active"
+        echo ""
+    fi
+    
     # Auto-start Cortex for dalicore if needed
     if [ "$CORTEX_CHECK" = "OK Cortex" ] && ! echo "$SURREAL_DETAILS" | grep -q "cortex:9009"; then
         if [ -f "/home/konverts/projects/cortex/cortex_no_voice.sh" ]; then
