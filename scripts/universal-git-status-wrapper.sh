@@ -162,7 +162,9 @@ if [[ "$CWD" == *"dalicore"* ]]; then
     
     # Check repository status
     cd "$CWD"
-    if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+    # Check for untracked files, excluding AIJOURNAL.md
+    UNTRACKED_FILES=$(git ls-files --others --exclude-standard | grep -v "^AIJOURNAL.md$")
+    if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$UNTRACKED_FILES" ]; then
         # Has uncommitted changes
         echo "You have uncommitted changes:"
         git diff --stat | head -10
@@ -172,7 +174,9 @@ if [[ "$CWD" == *"dalicore"* ]]; then
     # Show task router info based on git state
     TASK_ROUTER="$CWD/ai-routing/engineering-playbook/1_Developer_Task_Router.md"
     if [ -f "$TASK_ROUTER" ]; then
-        if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+        # Check for untracked files, excluding AIJOURNAL.md
+        UNTRACKED_FILES=$(git ls-files --others --exclude-standard | grep -v "^AIJOURNAL.md$")
+        if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$UNTRACKED_FILES" ]; then
             # Dirty tree - show dirty section
             echo ""
             sed -n '/<!-- DIRTY_TREE_START -->/,/<!-- DIRTY_TREE_END -->/p' "$TASK_ROUTER" | grep -v "<!--"
