@@ -167,24 +167,48 @@ echo ""
 # Project-specific features
 if [[ "$CWD" == *"dalicore"* ]]; then
     # Check if cargo watch is running for dalicore
-    CARGO_WATCH_RUNNING=$(ps aux | grep -E "cargo.*watch.*dalicore" | grep -v grep | wc -l)
+    # Look for various patterns: cargo watch, the full command, or the alias
+    # Check if any dalicore watcher services are active
+    WATCHER_SERVICES="dalicore-api-watcher dalicore-crm-watcher dalicore-frontend-watcher dalicore-storage-watcher"
+    WATCHERS_ACTIVE=0
     
-    if [ "$CARGO_WATCH_RUNNING" -eq 0 ]; then
+    for service in $WATCHER_SERVICES; do
+        if systemctl is-active --quiet "$service" 2>/dev/null; then
+            WATCHERS_ACTIVE=$((WATCHERS_ACTIVE + 1))
+        fi
+    done
+    
+    # Also check for legacy cargo watch processes
+    CARGO_WATCH_RUNNING=$(ps aux | grep -E "(cargo.*watch.*dalicore|cargo.*watch.*build.*release|dalicore-watch)" | grep -v grep | wc -l)
+    
+    if [ "$WATCHERS_ACTIVE" -eq 0 ] && [ "$CARGO_WATCH_RUNNING" -eq 0 ]; then
         echo ""
-        echo "⚠️  DEVELOPMENT WATCH NOT RUNNING ⚠️"
+        echo "⚠️  DEVELOPMENT WATCHERS NOT RUNNING ⚠️"
         echo ""
-        echo "Hey! You forgot to start the auto-rebuild watcher."
-        echo "Your services won't rebuild when you save files!"
+        echo "No file watchers are active. Your services won't auto-rebuild!"
         echo ""
-        echo "Run this in another terminal:"
-        echo "  dalicore-watch"
+        echo "Start watchers with systemctl:"
+        echo "  sudo systemctl start dalicore-api-watcher"
+        echo "  sudo systemctl start dalicore-crm-watcher"
+        echo "  sudo systemctl start dalicore-frontend-watcher"
+        echo "  sudo systemctl start dalicore-storage-watcher"
         echo ""
-        echo "Or if you haven't set up the alias:"
-        echo "  cargo watch -x \"build --release\" -s \"sudo systemctl restart dalicore-api\""
+        echo "Or start all at once:"
+        echo "  sudo systemctl start dalicore-*-watcher"
         echo ""
     else
-        # Add indicator to tool status that watch is running
-        echo "Dev Watch: ✓ Auto-rebuild active"
+        # Show which watchers are active
+        echo -n "Dev Watch: ✓ "
+        if [ "$WATCHERS_ACTIVE" -gt 0 ]; then
+            echo -n "$WATCHERS_ACTIVE systemd watcher(s)"
+        fi
+        if [ "$CARGO_WATCH_RUNNING" -gt 0 ] && [ "$WATCHERS_ACTIVE" -gt 0 ]; then
+            echo -n " + "
+        fi
+        if [ "$CARGO_WATCH_RUNNING" -gt 0 ]; then
+            echo -n "cargo watch"
+        fi
+        echo " active"
         echo ""
     fi
     
