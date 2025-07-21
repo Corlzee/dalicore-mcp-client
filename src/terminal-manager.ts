@@ -132,9 +132,6 @@ export class TerminalManager {
     
     const PERMISSION_FLAG = '--i-have-explicit-permission-from-user';
     
-    // Initialize output variable early for namespace protection messages
-    let output = '';
-    
     // Check if command is completely blocked
     if (BLOCKED_COMMANDS.some(pattern => pattern.test(command))) {
       return {
@@ -142,56 +139,6 @@ export class TerminalManager {
         output: `Error: Command not allowed: ${command}`,
         isBlocked: false
       };
-    }
-    
-    // Check for SurrealDB connection to port 8000 and validate/correct namespace
-    const surrealPattern = /surreal\s+sql.*--conn\s+(?:https?:\/\/)?(?:localhost|127\.0\.0\.1):8000/i;
-    if (surrealPattern.test(command)) {
-      // Extract namespace and database from command
-      const nsMatch = command.match(/--ns\s+(\S+)/);
-      const dbMatch = command.match(/--db\s+(\S+)/);
-      
-      const specifiedNs = nsMatch ? nsMatch[1] : null;
-      const specifiedDb = dbMatch ? dbMatch[1] : null;
-      
-      // Check if correction is needed
-      const needsCorrection = !specifiedNs || !specifiedDb || 
-                            specifiedNs !== 'dalicore' || specifiedDb !== 'dalicore';
-      
-      if (needsCorrection) {
-        // Build the corrected command
-        let correctedCommand = command;
-        
-        // Remove existing --ns and --db flags if present
-        correctedCommand = correctedCommand.replace(/--ns\s+\S+/g, '').replace(/--db\s+\S+/g, '');
-        
-        // Add correct namespace and database
-        correctedCommand += ' --ns dalicore --db dalicore';
-        
-        // Clean up any double spaces
-        correctedCommand = correctedCommand.replace(/\s+/g, ' ').trim();
-        
-        // Update command for execution
-        command = correctedCommand;
-        
-        // Prepare notification message
-        let notification = '\n⚠️  DALICORE NAMESPACE PROTECTION\n';
-        notification += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
-        
-        if (!specifiedNs && !specifiedDb) {
-          notification += 'Port 8000 requires Dalicore namespace and database.\n';
-          notification += '✅ Connecting you to: --ns dalicore --db dalicore\n';
-        } else {
-          notification += 'Port 8000 is reserved for the Dalicore namespace.\n';
-          notification += `❌ You specified: --ns ${specifiedNs || '[none]'} --db ${specifiedDb || '[none]'}\n`;
-          notification += '✅ Correcting to: --ns dalicore --db dalicore\n';
-        }
-        
-        notification += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
-        
-        // We'll prepend this notification to the output later
-        output = notification;
-      }
     }
     
     // Check if command matches any dangerous pattern
@@ -234,6 +181,7 @@ export class TerminalManager {
     
     // Spawn the process with an empty array of arguments and our options
     const process = spawn(cleanCommand, [], spawnOptions);
+    let output = '';
     
     // Ensure process.pid is defined before proceeding
     if (!process.pid) {
