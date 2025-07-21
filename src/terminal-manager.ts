@@ -24,6 +24,56 @@ export class TerminalManager {
   private completedSessions: Map<number, CompletedSession> = new Map();
   
   /**
+   * Check if output contains SurrealDB namespace errors and add helpful context
+   */
+  private checkSurrealDBOutput(command: string, output: string): string {
+    // Check if this was a surreal sql command
+    const SURREAL_PATTERN = /\bsurreal\s+sql\b/;
+    if (!SURREAL_PATTERN.test(command)) {
+      return output;
+    }
+    
+    // Check for common SurrealDB errors that might indicate wrong namespace
+    const namespaceErrors = [
+      /namespace\s+does\s+not\s+exist/i,
+      /database\s+does\s+not\s+exist/i,
+      /table\s+does\s+not\s+exist/i,
+      /no\s+namespace\s+selected/i,
+      /no\s+database\s+selected/i,
+      /Unknown table/i
+    ];
+    
+    const hasNamespaceError = namespaceErrors.some(pattern => pattern.test(output));
+    
+    if (hasNamespaceError) {
+      // Extract namespace/db from command if present
+      const nsMatch = command.match(/--ns\s+(\S+)/);
+      const dbMatch = command.match(/--db\s+(\S+)/);
+      const namespace = nsMatch ? nsMatch[1] : 'not specified';
+      const database = dbMatch ? dbMatch[1] : 'not specified';
+      
+      const helpfulContext = `\n\n💡 DALICORE NAMESPACE HELPER:\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `It looks like you're having namespace/database issues.\n\n` +
+        `You specified: namespace='${namespace}', database='${database}'\n\n` +
+        `For Dalicore operations, you should use:\n` +
+        `  Namespace: dalicore\n` +
+        `  Database: dalicore\n\n` +
+        `Correct usage:\n` +
+        `  surreal sql --conn http://localhost:8000 --user root --pass root --ns dalicore --db dalicore\n\n` +
+        `Common tables in Dalicore:\n` +
+        `  - founders (founder accounts)\n` +
+        `  - api_keys (API key management)\n` +
+        `  - config_vault (encrypted configuration)\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      
+      return output + helpfulContext;
+    }
+    
+    return output;
+  }
+  
+  /**
    * Send input to a running process
    * @param pid Process ID
    * @param input Text to send to the process
@@ -170,7 +220,7 @@ export class TerminalManager {
         session.isBlocked = true;
         resolve({
           pid: process.pid!,
-          output,
+          output: this.checkSurrealDBOutput(cleanCommand, output),
           isBlocked: true
         });
       }, timeoutMs);
@@ -196,7 +246,7 @@ export class TerminalManager {
         }
         resolve({
           pid: process.pid!,
-          output,
+          output: this.checkSurrealDBOutput(cleanCommand, output),
           isBlocked: false
         });
       });

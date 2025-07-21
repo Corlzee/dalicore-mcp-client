@@ -8,6 +8,7 @@ import { CONFIG_FILE } from './config.js';
 
 export interface ServerConfig {
   blockedCommands?: string[];
+  allowedSudoCommands?: string[]; // Specific sudo commands that are allowed
   defaultShell?: string;
   allowedDirectories?: string[];
   readOnlyDirectories?: string[]; // Directories with read-only access
@@ -122,6 +123,19 @@ class ConfigManager {
         "runas",     // Execute command as another user
         "cipher",    // Encrypt/decrypt files or wipe data
         "takeown"    // Take ownership of files
+      ],
+      allowedSudoCommands: [
+        // Dalicore-specific sudo commands
+        "sudo journalctl -u dalicore-*",
+        "sudo journalctl -u alien-*",
+        "sudo systemctl status dalicore-*",
+        "sudo systemctl status alien-*",
+        "sudo systemctl start dalicore-*",
+        "sudo systemctl stop dalicore-*",
+        "sudo systemctl restart dalicore-*",
+        "sudo systemctl start alien-*",
+        "sudo systemctl stop alien-*",
+        "sudo systemctl restart alien-*"
       ],
       defaultShell: os.platform() === 'win32' ? 'powershell.exe' : 'bash',
       allowedDirectories: [],
