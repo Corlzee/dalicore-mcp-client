@@ -8,6 +8,7 @@ import { CONFIG_FILE } from './config.js';
 
 export interface ServerConfig {
   blockedCommands?: string[];
+  allowedSudoCommands?: string[];
   defaultShell?: string;
   allowedDirectories?: string[];
   readOnlyDirectories?: string[]; // Directories with read-only access
