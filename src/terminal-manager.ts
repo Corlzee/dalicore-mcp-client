@@ -183,6 +183,28 @@ export class TerminalManager {
     const process = spawn(cleanCommand, [], spawnOptions);
     let output = '';
     
+    // Check if this is a SurrealDB CLI command to localhost:8000
+    const surrealPattern = /surreal\s+sql.*(?:--conn\s+https?:\/\/localhost:8000|localhost:8000)/i;
+    const isSurrealToCore = surrealPattern.test(cleanCommand);
+    
+    if (isSurrealToCore) {
+      // Inject helpful namespace guidance
+      const guidance = `\n🎯 DALICORE DATABASE CONNECTION DETECTED\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `You're connecting to the Dalicore core database on port 8000.\n\n` +
+        `✅ CORRECT NAMESPACE SETTINGS:\n` +
+        `   USE NS dalicore;\n` +
+        `   USE DB dalicore;\n\n` +
+        `📋 COMMON TABLES:\n` +
+        `   • founders     - Founder accounts\n` +
+        `   • api_keys     - API key management  \n` +
+        `   • config_vault - Encrypted configuration\n\n` +
+        `⚠️  Using the wrong namespace will create empty databases!\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      
+      output += guidance;
+    }
+    
     // Ensure process.pid is defined before proceeding
     if (!process.pid) {
       // Return a consistent error object instead of throwing
