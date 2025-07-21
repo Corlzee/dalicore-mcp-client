@@ -151,29 +151,9 @@ class CommandManager {
 
     async validateCommand(command: string): Promise<boolean> {
         try {
-            // Get blocked commands and allowed sudo commands from config
+            // Get blocked commands from config
             const config = await configManager.getConfig();
             const blockedCommands = config.blockedCommands || [];
-            const allowedSudoCommands = config.allowedSudoCommands || [];
-            
-            // Check if this is a sudo command
-            const trimmedCommand = command.trim();
-            if (trimmedCommand.startsWith('sudo ')) {
-                // Check if it matches any allowed sudo pattern
-                for (const allowedPattern of allowedSudoCommands) {
-                    // Convert pattern to regex (replace * with .*)
-                    const regexPattern = allowedPattern
-                        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // Escape special regex chars
-                        .replace(/\\\*/g, '.*'); // Then replace escaped * with .*
-                    
-                    const regex = new RegExp(`^${regexPattern}(\\s|$)`);
-                    if (regex.test(trimmedCommand)) {
-                        return true; // This sudo command is explicitly allowed
-                    }
-                }
-                // If we get here, it's a sudo command that's not in the allowlist
-                return false;
-            }
             
             // Extract all commands from the command string
             const allCommands = this.extractCommands(command);
