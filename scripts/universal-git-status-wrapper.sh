@@ -237,7 +237,13 @@ if [[ "$CWD" == *"dalicore"* ]]; then
     fi
     
     # Show task router info based on git state
-    TASK_ROUTER="$CWD/ai-routing/engineering-playbook/1_Developer_Task_Router.md"
+    # For projects in /home/konverts/projects/, use the dalicore task router
+    if [[ "$CWD" == "/home/konverts/projects/"* ]]; then
+        TASK_ROUTER="/home/konverts/projects/dalicore/ai-routing/engineering-playbook/1_Developer_Task_Router.md"
+    else
+        # For other locations, look for a local task router
+        TASK_ROUTER="$CWD/ai-routing/engineering-playbook/1_Developer_Task_Router.md"
+    fi
     if [ -f "$TASK_ROUTER" ]; then
         # Check for untracked files, excluding AIJOURNAL.md
         UNTRACKED_FILES=$(git ls-files --others --exclude-standard | grep -v "^AIJOURNAL.md$")
