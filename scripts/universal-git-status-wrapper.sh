@@ -166,51 +166,7 @@ echo ""
 
 # Project-specific features
 if [[ "$CWD" == *"dalicore"* ]]; then
-    # Check if cargo watch is running for dalicore
-    # Look for various patterns: cargo watch, the full command, or the alias
-    # Check if any dalicore watcher services are active
-    WATCHER_SERVICES="dalicore-api-watcher dalicore-crm-watcher dalicore-frontend-watcher dalicore-storage-watcher"
-    WATCHERS_ACTIVE=0
-    
-    for service in $WATCHER_SERVICES; do
-        if systemctl is-active --quiet "$service" 2>/dev/null; then
-            WATCHERS_ACTIVE=$((WATCHERS_ACTIVE + 1))
-        fi
-    done
-    
-    # Also check for legacy cargo watch processes
-    CARGO_WATCH_RUNNING=$(ps aux | grep -E "(cargo.*watch.*dalicore|cargo.*watch.*build.*release|dalicore-watch)" | grep -v grep | wc -l)
-    
-    if [ "$WATCHERS_ACTIVE" -eq 0 ] && [ "$CARGO_WATCH_RUNNING" -eq 0 ]; then
-        echo ""
-        echo "⚠️  DEVELOPMENT WATCHERS NOT RUNNING ⚠️"
-        echo ""
-        echo "No file watchers are active. Your services won't auto-rebuild!"
-        echo ""
-        echo "Start watchers with systemctl:"
-        echo "  sudo systemctl start dalicore-api-watcher"
-        echo "  sudo systemctl start dalicore-crm-watcher"
-        echo "  sudo systemctl start dalicore-frontend-watcher"
-        echo "  sudo systemctl start dalicore-storage-watcher"
-        echo ""
-        echo "Or start all at once:"
-        echo "  sudo systemctl start dalicore-*-watcher"
-        echo ""
-    else
-        # Show which watchers are active
-        echo -n "Dev Watch: ✓ "
-        if [ "$WATCHERS_ACTIVE" -gt 0 ]; then
-            echo -n "$WATCHERS_ACTIVE systemd watcher(s)"
-        fi
-        if [ "$CARGO_WATCH_RUNNING" -gt 0 ] && [ "$WATCHERS_ACTIVE" -gt 0 ]; then
-            echo -n " + "
-        fi
-        if [ "$CARGO_WATCH_RUNNING" -gt 0 ]; then
-            echo -n "cargo watch"
-        fi
-        echo " active"
-        echo ""
-    fi
+    # No longer checking for watchers - manual control is preferred
     
     # Auto-start Cortex for dalicore if needed
     if [ "$CORTEX_CHECK" = "OK Cortex" ] && ! echo "$SURREAL_DETAILS" | grep -q "cortex:9009"; then
