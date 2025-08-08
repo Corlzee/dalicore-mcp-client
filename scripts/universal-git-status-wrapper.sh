@@ -42,10 +42,16 @@ TOOL_STATUS=""
 # Check 1: Memory System
 CORTEX_CHECK=$(command -v cortex > /dev/null && echo 'OK Cortex' || echo 'NO Cortex')
 
-# Check 2: Dalicore Services Status
+# Check 2: Project-specific Service Status
 SERVICE_STATUS=""
-if [[ "$CWD" == *"dalicore"* ]]; then
-    # Check all dalicore and alien services
+SERVICE_CHECK=""
+
+# Source enhanced Dalicore status if available and in a dalicore project
+if [[ "$CWD" == *"dalicore"* ]] && [ -f "/home/konverts/projects2/Commander-Keen/scripts/dalicore-service-status.sh" ]; then
+    # Source the enhanced status (it will set SERVICE_CHECK)
+    source /home/konverts/projects2/Commander-Keen/scripts/dalicore-service-status.sh
+elif [[ "$CWD" == *"dalicore"* ]]; then
+    # Fallback to basic service check
     SERVICE_LIST=$(systemctl list-units --type=service --all --no-legend | grep -E "(dalicore-|alien-)" | awk '{print $1, $3}')
     
     if [ -n "$SERVICE_LIST" ]; then
