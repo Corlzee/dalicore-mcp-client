@@ -87,12 +87,31 @@ export const SearchCodeArgsSchema = z.object({
 });
 
 // Edit tools schema
-export const EditBlockArgsSchema = z.object({
-  file_path: z.string(),
-  old_string: z.string(),
-  new_string: z.string(),
-  expected_replacements: z.number().optional().default(1),
-});
+// Accept both old_string/new_string (correct) and old_str/new_str (what Claude's prompt claims)
+export const EditBlockArgsSchema = z.preprocess(
+  (args: any) => {
+    // Normalize abbreviated parameter names to full names
+    if (args && typeof args === 'object') {
+      const normalized = { ...args };
+      if ('old_str' in args && !('old_string' in args)) {
+        normalized.old_string = args.old_str;
+        delete normalized.old_str;
+      }
+      if ('new_str' in args && !('new_string' in args)) {
+        normalized.new_string = args.new_str;
+        delete normalized.new_str;
+      }
+      return normalized;
+    }
+    return args;
+  },
+  z.object({
+    file_path: z.string(),
+    old_string: z.string(),
+    new_string: z.string(),
+    expected_replacements: z.number().optional().default(1),
+  })
+);
 
 // Send input to process schema
 export const InteractWithProcessArgsSchema = z.object({

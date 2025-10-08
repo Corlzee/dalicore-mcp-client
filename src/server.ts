@@ -317,8 +317,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                         
                         Takes:
                         - file_path: Path to the file to edit
-                        - old_string: Text to replace
-                        - new_string: Replacement text
+                        - old_string: Text to replace (also accepts old_str as alias)
+                        - new_string: Replacement text (also accepts new_str as alias)
                         - expected_replacements: Optional parameter for number of replacements
                         
                         By default, replaces only ONE occurrence of the search text.
