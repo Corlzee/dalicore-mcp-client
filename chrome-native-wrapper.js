@@ -3,7 +3,7 @@
 import { spawn } from 'child_process';
 
 const ck = spawn(process.argv[0], ['./dist/index.js'], {
-  cwd: '/home/konverts/projects2/Commander-Keen',
+  cwd: '/home/konverts/projects/Commander-Keen-Dev',
   stdio: ['pipe', 'pipe', 'inherit']
 });
 

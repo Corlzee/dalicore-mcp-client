@@ -152,6 +152,31 @@ export async function performSearchReplace(filePath: string, block: SearchReplac
     
     // If exact match found and count matches expected replacements, proceed with exact replacement
     if (count > 0 && count === expectedReplacements) {
+        // Calculate line numbers for all matches
+        const lineRanges: string[] = [];
+        let searchPos = 0;
+        
+        for (let i = 0; i < expectedReplacements; i++) {
+            const matchPos = content.indexOf(normalizedSearch, searchPos);
+            if (matchPos === -1) break;
+            
+            // Count newlines before match to get starting line number (1-indexed)
+            const startLine = content.substring(0, matchPos).split('\n').length;
+            
+            // Count newlines in matched text to get ending line
+            const matchLines = normalizedSearch.split('\n').length;
+            const endLine = startLine + matchLines - 1;
+            
+            // Format line range
+            if (startLine === endLine) {
+                lineRanges.push(`line ${startLine}`);
+            } else {
+                lineRanges.push(`lines ${startLine}-${endLine}`);
+            }
+            
+            searchPos = matchPos + normalizedSearch.length;
+        }
+        
         // Replace all occurrences
         let newContent = content;
         
@@ -181,11 +206,20 @@ RECOMMENDATION: For large search/replace operations, consider breaking them into
         }
         
         await writeFile(filePath, newContent);
+        
+        // Format success message with line numbers
+        const lineInfo = lineRanges.length > 0 ? ` (${lineRanges.join(', ')})` : '';
+        
+        // Debug logging
+        console.error(`[EDIT_BLOCK_DEBUG] lineRanges:`, lineRanges);
+        console.error(`[EDIT_BLOCK_DEBUG] lineInfo:`, lineInfo);
+        console.error(`[EDIT_BLOCK_DEBUG] Final message:`, `Successfully applied ${expectedReplacements} edit${expectedReplacements > 1 ? 's' : ''} to ${filePath}${lineInfo}${warningMessage}`);
+        
         capture('server_edit_block_exact_success', {fileExtension: fileExtension, expectedReplacements, hasWarning: warningMessage !== ""});
         return {
             content: [{ 
                 type: "text", 
-                text: `Successfully applied ${expectedReplacements} edit${expectedReplacements > 1 ? 's' : ''} to ${filePath}${warningMessage}` 
+                text: `Successfully applied ${expectedReplacements} edit${expectedReplacements > 1 ? 's' : ''} to ${filePath}${lineInfo}${warningMessage}` 
             }],
         };
     }
