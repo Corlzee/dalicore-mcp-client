@@ -83,10 +83,17 @@ export async function handleReadFile(args: unknown): Promise<ServerResult> {
                 ],
             };
         } else {
-            // For all other files, return as text
-            return {
+            // For all other files, return as text with metadata if available
+            const result: ServerResult = {
                 content: [{ type: "text", text: fileResult.content }],
             };
+            
+            // Add metadata if present
+            if (fileResult.metadata) {
+                result._meta = fileResult.metadata;
+            }
+            
+            return result;
         }
     };
     

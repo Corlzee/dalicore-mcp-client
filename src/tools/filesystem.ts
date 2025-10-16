@@ -238,7 +238,35 @@ export interface FileResult {
     content: string;
     mimeType: string;
     isImage: boolean;
+    metadata?: {
+        statusMessage?: string;
+        offset?: number;
+        linesRead?: number;
+        totalLines?: number;      // Total lines in the file
+        startLine?: number;        // Actual starting line number (1-indexed)
+    };
 }
+
+/**
+ * Fast line counting by reading file in chunks
+ * @param filePath Path to the file
+ * @returns Total number of lines in the file
+ */
+async function countTotalLines(filePath: string): Promise<number> {
+    const rl = createInterface({
+        input: createReadStream(filePath),
+        crlfDelay: Infinity
+    });
+
+    let totalLines = 0;
+    for await (const line of rl) {
+        totalLines++;
+    }
+    
+    rl.close();
+    return totalLines;
+}
+
 
 
 /**
@@ -378,11 +406,28 @@ async function readLastNLinesReverse(filePath: string, n: number, mimeType: stri
         }
 
         const result = lines.slice(-n); // Get exactly n lines
-        const content = includeStatusMessage
-            ? `[Reading last ${result.length} lines]\n\n${result.join('\n')}`
-            : result.join('\n');
-
-        return { content, mimeType, isImage: false };
+        const content = result.join('\n');
+        
+        if (includeStatusMessage) {
+            // Count total lines for proper line numbering
+            const totalLines = await countTotalLines(filePath);
+            const startLine = totalLines >= n ? totalLines - n + 1 : 1;
+            
+            return { 
+                content, 
+                mimeType, 
+                isImage: false,
+                metadata: {
+                    statusMessage: `[Reading last ${result.length} lines]`,
+                    offset: -n,
+                    linesRead: result.length,
+                    totalLines: totalLines,
+                    startLine: startLine
+                }
+            };
+        } else {
+            return { content, mimeType, isImage: false };
+        }
     } finally {
         await fd.close();
     }
@@ -420,10 +465,29 @@ async function readFromEndWithReadline(filePath: string, requestedLines: number,
         result = buffer.slice(0, totalLines);
     }
 
-    const content = includeStatusMessage
-        ? `[Reading last ${result.length} lines]\n\n${result.join('\n')}`
-        : result.join('\n');
-    return { content, mimeType, isImage: false };
+    const content = result.join('\n');
+    
+    if (includeStatusMessage) {
+        // Calculate actual starting line number
+        const startLine = totalLines >= requestedLines 
+            ? totalLines - requestedLines + 1 
+            : 1;
+        
+        return { 
+            content, 
+            mimeType, 
+            isImage: false,
+            metadata: {
+                statusMessage: `[Reading last ${result.length} lines]`,
+                offset: -requestedLines,
+                linesRead: result.length,
+                totalLines: totalLines,
+                startLine: startLine
+            }
+        };
+    } else {
+        return { content, mimeType, isImage: false };
+    }
 }
 
 /**
@@ -437,25 +501,41 @@ async function readFromStartWithReadline(filePath: string, offset: number, lengt
 
     const result: string[] = [];
     let lineNumber = 0;
+    let totalLines = 0;
+    let contentComplete = false;
 
     for await (const line of rl) {
-        if (lineNumber >= offset && result.length < length) {
+        totalLines++;
+        if (!contentComplete && lineNumber >= offset && result.length < length) {
             result.push(line);
+            if (result.length >= length) {
+                contentComplete = true;
+            }
         }
-        if (result.length >= length) break; // Early exit optimization
         lineNumber++;
     }
 
     rl.close();
 
+    const content = result.join('\n');
+    
     if (includeStatusMessage) {
         const statusMessage = offset === 0
             ? `[Reading ${result.length} lines from start]`
-            : `[Reading ${result.length} lines from line ${offset}]`;
-        const content = `${statusMessage}\n\n${result.join('\n')}`;
-        return { content, mimeType, isImage: false };
+            : `[Reading ${result.length} lines from line ${offset + 1}]`;
+        return { 
+            content, 
+            mimeType, 
+            isImage: false,
+            metadata: {
+                statusMessage,
+                offset,
+                linesRead: result.length,
+                totalLines: totalLines,
+                startLine: offset + 1
+            }
+        };
     } else {
-        const content = result.join('\n');
         return { content, mimeType, isImage: false };
     }
 }
@@ -524,10 +604,27 @@ async function readFromEstimatedPosition(filePath: string, offset: number, lengt
 
         rl2.close();
 
-        const content = includeStatusMessage
-            ? `[Reading ${result.length} lines from estimated position (target line ${offset})]\n\n${result.join('\n')}`
-            : result.join('\n');
-        return { content, mimeType, isImage: false };
+        const content = result.join('\n');
+        
+        if (includeStatusMessage) {
+            // Count total lines for proper line numbering
+            const totalLines = await countTotalLines(filePath);
+            
+            return { 
+                content, 
+                mimeType, 
+                isImage: false,
+                metadata: {
+                    statusMessage: `[Reading ${result.length} lines from estimated position (target line ${offset + 1})]`,
+                    offset,
+                    linesRead: result.length,
+                    totalLines: totalLines,
+                    startLine: offset + 1
+                }
+            };
+        } else {
+            return { content, mimeType, isImage: false };
+        }
     } finally {
         await fd.close();
     }
