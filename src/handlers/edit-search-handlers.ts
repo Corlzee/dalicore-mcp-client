@@ -40,33 +40,54 @@ export async function handleSearchCode(args: unknown): Promise<ServerResult> {
         });
     };
 
-    // Use withTimeout at the handler level
-    const results = await withTimeout(
-        searchOperation(),
-        timeoutMs,
-        'Code search operation',
-        [] // Empty array as default on timeout
-    );
-
-    // If timeout occurred, try to terminate the ripgrep process
-    if (results.length === 0 && (globalThis as any).currentSearchProcess) {
-        try {
-            console.log(`Terminating timed out search process (PID: ${(globalThis as any).currentSearchProcess.pid})`);
-            (globalThis as any).currentSearchProcess.kill();
-            delete (globalThis as any).currentSearchProcess;
-        } catch (error) {
-            capture('server_request_error', {
-                error: 'Error terminating search process'
-            });
+    let results: any[] | null;
+    try {
+        // Use withTimeout but catch errors to distinguish between timeouts and validation errors
+        results = await withTimeout(
+            searchOperation(),
+            timeoutMs,
+            'Code search operation',
+            null // Use null to let errors propagate
+        );
+    } catch (error: any) {
+        // Check if this is a path validation error
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.includes('Path not allowed')) {
+            // Propagate path validation errors immediately
+            return {
+                content: [{type: "text", text: `Error: ${errorMessage}`}],
+                isError: true,
+            };
         }
-    }
-
-    if (results.length === 0) {
-        if (timeoutMs > 0) {
+        
+        // If it's a timeout or other error, try to terminate the ripgrep process
+        if ((globalThis as any).currentSearchProcess) {
+            try {
+                console.log(`Terminating search process (PID: ${(globalThis as any).currentSearchProcess.pid})`);
+                (globalThis as any).currentSearchProcess.kill();
+                delete (globalThis as any).currentSearchProcess;
+            } catch (killError) {
+                capture('server_request_error', {
+                    error: 'Error terminating search process'
+                });
+            }
+        }
+        
+        // For timeout errors, return empty results
+        if (errorMessage.includes('timed out')) {
             return {
                 content: [{type: "text", text: `No matches found or search timed out after ${timeoutMs}ms.`}],
             };
         }
+        
+        // For other errors, propagate them
+        return {
+            content: [{type: "text", text: `Error: ${errorMessage}`}],
+            isError: true,
+        };
+    }
+
+    if (!results || results.length === 0) {
         return {
             content: [{type: "text", text: "No matches found"}],
         };

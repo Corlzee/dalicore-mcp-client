@@ -1,17 +1,17 @@
 {
-  "name": "@konverts/commander-keen",
+  "name": "@konverts/dalicore-mcp-client",
   "version": "1.0.0",
-  "description": "MCP server for terminal operations with safety guardrails - prevents accidental rm -rf disasters",
+  "description": "Streamlined MCP client for Dalicore - 7 essential tools for file operations, code editing, and command execution",
   "license": "MIT",
-  "author": "Eduards Ruzga",
-  "homepage": "https://github.com/wonderwhy-er/DesktopCommanderMCP",
-  "bugs": "https://github.com/wonderwhy-er/DesktopCommanderMCP/issues",
+  "author": "Dalicore Team",
+  "homepage": "https://github.com/konverts/dalicore-mcp-client",
+  "bugs": "https://github.com/konverts/dalicore-mcp-client/issues",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
   "bin": {
-    "desktop-commander": "dist/index.js",
+    "dalicore-mcp-client": "dist/index.js",
     "setup": "dist/setup-claude-server.js"
   },
   "files": [
@@ -48,21 +48,15 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "terminal",
+    "dalicore",
     "claude",
     "ai",
-    "command-line",
-    "process-management",
-    "file-editing",
+    "file-operations",
     "code-editing",
-    "diff",
-    "patch",
-    "block-editing",
-    "file-system",
-    "text-manipulation",
-    "code-modification",
     "surgical-edits",
-    "file-operations"
+    "command-execution",
+    "streamlined",
+    "essential-tools"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.8.0",

@@ -10,6 +10,7 @@ export interface ServerConfig {
   blockedCommands?: string[];
   allowedSudoCommands?: string[];
   defaultShell?: string;
+  defaultWorkingDirectory?: string; // Default directory for resolving relative paths
   allowedDirectories?: string[];
   readOnlyDirectories?: string[]; // Directories with read-only access
   telemetryEnabled?: boolean; // New field for telemetry control
@@ -125,6 +126,7 @@ class ConfigManager {
         "takeown"    // Take ownership of files
       ],
       defaultShell: os.platform() === 'win32' ? 'powershell.exe' : 'bash',
+      defaultWorkingDirectory: path.join(os.homedir(), 'projects'), // Default working directory for relative paths
       allowedDirectories: [],
       readOnlyDirectories: [
         path.join(os.homedir(), '.config', 'Claude', 'logs') // MCP logs directory

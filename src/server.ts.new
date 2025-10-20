@@ -9,7 +9,7 @@ import {
 import {zodToJsonSchema} from "zod-to-json-schema";
 
 // Shared constants for tool descriptions
-const PATH_GUIDANCE = `IMPORTANT: Always use absolute paths (starting with '/' or drive letter like 'C:\\') for reliability. Relative paths (like './dalicore' or 'src/main.rs') are resolved relative to the defaultWorkingDirectory configuration setting (default: ~/projects). You can check the current defaultWorkingDirectory with system info. Tilde paths (~/...) are expanded to the user's home directory. Unless the user explicitly asks for relative paths, use absolute paths for clarity.`;
+const PATH_GUIDANCE = `IMPORTANT: Always use absolute paths (starting with '/' or drive letter like 'C:\\') for reliability. Relative paths may fail as they depend on the current working directory. Tilde paths (~/...) might not work in all contexts. Unless the user explicitly asks for relative paths, use absolute paths.`;
 
 const CMD_PREFIX_DESCRIPTION = `This command can be referenced as "DC: ..." or "use Desktop Commander to ..." in your instructions.`;
 
@@ -25,8 +25,6 @@ import {
 
 import { getSystemInfoHeader } from './utils/systemInfo.js';
 import {trackToolCall} from './utils/trackTools.js';
-import * as handlers from './handlers/index.js';
-import {ServerResult} from './types.js';
 
 import {VERSION} from './version.js';
 import {capture, capture_call_tool} from "./utils/capture.js";
@@ -68,9 +66,13 @@ console.error("Setting up request handlers...");
 server.setRequestHandler(ListToolsRequestSchema, async () => {
     try {
         console.error("Generating tools list...");
+
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+    try {
+        console.error("Generating tools list...");
         
         // Get system info to prepend to first tool
-        const systemInfo = await getSystemInfoHeader();
+        const systemInfo = getSystemInfoHeader();
         
         return {
             tools: [
@@ -269,58 +271,101 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     }
 });
 
-server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest): Promise<ServerResult> => {
-    try {
-        const {name, arguments: args} = request.params;
-        capture_call_tool('server_call_tool', {
-            name
-        });
-        
-        // Track tool call
-        trackToolCall(name, args);
+import * as handlers from './handlers/index.js';
+import {ServerResult} from './types.js';
+            // Config tools
+            case "get_config":
+                try {
+                    return await getConfig();
+                } catch (error) {
+                    capture('server_request_error', {message: `Error in get_config handler: ${error}`});
+                    return {
+                        content: [{type: "text", text: `Error: Failed to get configuration`}],
+                        isError: true,
+                    };
+                }
+            case "set_config_value":
+                try {
+                    return await setConfigValue(args);
+                } catch (error) {
+                    capture('server_request_error', {message: `Error in set_config_value handler: ${error}`});
+                    return {
+                        content: [{type: "text", text: `Error: Failed to set configuration value`}],
+                        isError: true,
+                    };
+                }
 
-        // Using a more structured approach with dedicated handlers
-        switch (name) {
-            // Process Management
+            // Terminal tools
             case "start_process":
                 return await handlers.handleStartProcess(args);
 
-            // File Reading
+            case "read_process_output":
+                return await handlers.handleReadProcessOutput(args);
+                
+            case "interact_with_process":
+                return await handlers.handleInteractWithProcess(args);
+
+            case "force_terminate":
+                return await handlers.handleForceTerminate(args);
+
+            case "list_sessions":
+                return await handlers.handleListSessions();
+
+            // Process tools
+            case "list_processes":
+                return await handlers.handleListProcesses();
+
+            case "kill_process":
+                return await handlers.handleKillProcess(args);
+
+            // Note: REPL functionality removed in favor of using general terminal commands
+
+            // Filesystem tools
             case "read_file":
                 return await handlers.handleReadFile(args);
 
-            // File Writing
+            case "read_multiple_files":
+                return await handlers.handleReadMultipleFiles(args);
+
             case "write_file":
                 return await handlers.handleWriteFile(args);
 
-            // Code Editing
-            case "edit_block":
-                return await handlers.handleEditBlock(args);
+            case "create_directory":
+                return await handlers.handleCreateDirectory(args);
 
-            // Code Search
-            case "search_code":
-                return await handlers.handleSearchCode(args);
-
-            // File System Operations
             case "list_directory":
                 return await handlers.handleListDirectory(args);
+
+            case "move_file":
+                return await handlers.handleMoveFile(args);
 
             case "search_files":
                 return await handlers.handleSearchFiles(args);
 
+            case "search_code":
+                return await handlers.handleSearchCode(args);
+
+            case "get_file_info":
+                return await handlers.handleGetFileInfo(args);
+
+            case "edit_block":
+                return await handlers.handleEditBlock(args);
+
             default:
+                capture('server_unknown_tool', {name});
                 return {
-                    content: [{type: "text", text: `Unknown tool: ${name}`}],
+                    content: [{type: "text", text: `Error: Unknown tool: ${name}`}],
                     isError: true,
                 };
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        capture('server_request_error', {
+            error: errorMessage
+        });
         return {
-            content: [{type: "text", text: `Error calling tool ${request.params.name}: ${errorMessage}`}],
+            content: [{type: "text", text: `Error: ${errorMessage}`}],
             isError: true,
         };
     }
 });
-
-export default server;

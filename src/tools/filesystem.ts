@@ -178,13 +178,17 @@ export async function validatePath(requestedPath: string): Promise<string> {
     const PATH_VALIDATION_TIMEOUT = 10000; // 10 seconds timeout
     
     const validationOperation = async (): Promise<string> => {
+        // Get default working directory from config
+        const config = await configManager.getConfig();
+        const defaultCwd = config.defaultWorkingDirectory || process.cwd();
+        
         // Expand home directory if present
         const expandedPath = expandHome(requestedPath);
         
-        // Convert to absolute path
+        // Convert to absolute path, using configured default working directory for relative paths
         const absolute = path.isAbsolute(expandedPath)
             ? path.resolve(expandedPath)
-            : path.resolve(process.cwd(), expandedPath);
+            : path.resolve(defaultCwd, expandedPath);
             
         // Check if path is allowed
         if (!(await isPathAllowed(absolute))) {

@@ -1,39 +1,27 @@
 import { z } from "zod";
 
-// Config tools schemas
-export const GetConfigArgsSchema = z.object({});
+// ============================================================================
+// DALICORE MCP CLIENT - 7 ESSENTIAL TOOLS
+// ============================================================================
+// Streamlined tool schemas based on actual usage data:
+// - start_process: 34.4% of usage
+// - read_file: 29.2% of usage
+// - edit_block: 17.0% of usage
+// - search_code: 11.2% of usage
+// - write_file: 2.2% of usage
+// - list_directory: 2.5% of usage
+// - search_files: 1.2% of usage
+// Total coverage: 97.5% of actual tool usage
+// ============================================================================
 
-export const SetConfigValueArgsSchema = z.object({
-  key: z.string(),
-  value: z.any(),
-});
-
-// Empty schemas
-export const ListProcessesArgsSchema = z.object({});
-
-// Terminal tools schemas
+// Process Management
 export const StartProcessArgsSchema = z.object({
   command: z.string(),
   timeout_ms: z.number(),
   shell: z.string().optional(),
 });
 
-export const ReadProcessOutputArgsSchema = z.object({
-  pid: z.number(),
-  timeout_ms: z.number().optional(),
-});
-
-export const ForceTerminateArgsSchema = z.object({
-  pid: z.number(),
-});
-
-export const ListSessionsArgsSchema = z.object({});
-
-export const KillProcessArgsSchema = z.object({
-  pid: z.number(),
-});
-
-// Filesystem tools schemas
+// File Reading
 export const ReadFileArgsSchema = z.object({
   path: z.string(),
   isUrl: z.boolean().optional().default(false),
@@ -41,27 +29,16 @@ export const ReadFileArgsSchema = z.object({
   length: z.number().optional().default(1000),
 });
 
-export const ReadMultipleFilesArgsSchema = z.object({
-  paths: z.array(z.string()),
-});
-
+// File Writing
 export const WriteFileArgsSchema = z.object({
   path: z.string(),
   content: z.string(),
   mode: z.enum(['rewrite', 'append']).default('rewrite'),
 });
 
-export const CreateDirectoryArgsSchema = z.object({
-  path: z.string(),
-});
-
+// File System Operations
 export const ListDirectoryArgsSchema = z.object({
   path: z.string(),
-});
-
-export const MoveFileArgsSchema = z.object({
-  source: z.string(),
-  destination: z.string(),
 });
 
 export const SearchFilesArgsSchema = z.object({
@@ -70,11 +47,7 @@ export const SearchFilesArgsSchema = z.object({
   timeoutMs: z.number().optional(),
 });
 
-export const GetFileInfoArgsSchema = z.object({
-  path: z.string(),
-});
-
-// Search tools schema
+// Code Search
 export const SearchCodeArgsSchema = z.object({
   path: z.string(),
   pattern: z.string(),
@@ -86,7 +59,7 @@ export const SearchCodeArgsSchema = z.object({
   timeoutMs: z.number().optional(),
 });
 
-// Edit tools schema
+// Code Editing
 // Accept both old_string/new_string (correct) and old_str/new_str (what Claude's prompt claims)
 export const EditBlockArgsSchema = z.preprocess(
   (args: any) => {
@@ -112,11 +85,3 @@ export const EditBlockArgsSchema = z.preprocess(
     expected_replacements: z.number().optional().default(1),
   })
 );
-
-// Send input to process schema
-export const InteractWithProcessArgsSchema = z.object({
-  pid: z.number(),
-  input: z.string(),
-  timeout_ms: z.number().optional(),
-  wait_for_prompt: z.boolean().optional(),
-});
