@@ -92,4 +92,7 @@ export const ToolHistoryArgsSchema = z.object({
   filter: z.enum(['edits', 'all']).default('edits'),
   limit: z.number().optional().default(10),
   verbose: z.boolean().optional().default(false),
+  since: z.string().optional(),  // Time filter: "1h", "30m", "2d", or ISO timestamp
+  pathFilter: z.string().optional(),  // Filter by file path substring
+  showFullCommands: z.boolean().optional().default(false),  // Show full commands without truncation
 });

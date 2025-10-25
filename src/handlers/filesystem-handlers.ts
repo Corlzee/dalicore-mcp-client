@@ -217,6 +217,9 @@ export async function handleToolHistory(args: unknown): Promise<ServerResult> {
             filter: parsed.filter,
             limit: parsed.limit,
             verbose: parsed.verbose,
+            since: parsed.since,
+            pathFilter: parsed.pathFilter,
+            showFullCommands: parsed.showFullCommands,
         });
         
         return {

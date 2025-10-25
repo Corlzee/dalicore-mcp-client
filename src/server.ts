@@ -267,18 +267,36 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 {
                     name: "tool_history",
                     description: `
-                        Get a history of recent tool calls that modified the filesystem.
+                        Get a history of recent tool calls with success/failure status and result summaries.
                         
                         Useful for:
                         - Remembering what files were edited recently
-                        - Checking if a file operation was already performed
-                        - Reviewing recent changes without re-reading files
+                        - Checking if operations succeeded or failed
+                        - Reviewing command output and results
+                        - Finding specific file operations
+                        - Debugging failed operations
                         
                         Filter options:
-                        - "edits" (default): Only write_file and edit_block operations
-                        - "all": All tool calls
+                        - filter: "edits" (default) = Only write_file and edit_block operations
+                        - filter: "all" = All tool calls
                         
-                        Verbose mode shows full details; non-verbose shows compact one-liners.
+                        Time filtering:
+                        - since: "1h" / "30m" / "2d" = Show only operations from last N time
+                        - since: ISO timestamp = Show operations after specific time
+                        
+                        Path filtering:
+                        - pathFilter: "/path/to/file" = Only show operations on files matching path
+                        
+                        Display options:
+                        - verbose: true = Show full details with status and results
+                        - verbose: false (default) = Compact one-line format
+                        - showFullCommands: true = Don't truncate long commands
+                        
+                        Results show:
+                        - ✓/✗ Success/failure indicators
+                        - Result summaries (lines read/written, matches found, etc.)
+                        - Error messages for failed operations
+                        - Timestamps as human-readable relative times
                         
                         ${CMD_PREFIX_DESCRIPTION}`,
                     inputSchema: zodToJsonSchema(ToolHistoryArgsSchema)
