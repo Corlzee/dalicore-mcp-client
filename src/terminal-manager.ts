@@ -72,7 +72,10 @@ export class TerminalManager {
       /\brm\s+(-rf?|-r)\s+/,
       /\brm\s+.*\*/,
       /\bfind\s+.*-delete/,
-      /\bfind\s+.*-exec\s+rm/
+      /\bfind\s+.*-exec\s+rm/,
+      // Git force operations (catches in compound commands too)
+      /git\s+push.*?(?:--force[^\s]*|-f)(?:\s|$|;|&|\|)/,
+      /git\s+pull.*?(?:--force[^\s]*|-f)(?:\s|$|;|&|\|)/
     ];
     
     // Commands that are completely blocked
@@ -95,16 +98,23 @@ export class TerminalManager {
     const isDangerous = DANGEROUS_PATTERNS.some(pattern => pattern.test(command));
     
     if (isDangerous && !command.includes(PERMISSION_FLAG)) {
+      // Determine operation type for better messaging
+      const isGitForce = /git\s+(push|pull).*?(--force|-f)/.test(command);
+      const operationType = isGitForce ? 'Git force operation' : 'Destructive file operation';
+      const example = isGitForce 
+        ? 'git push --force --i-have-explicit-permission-from-user origin main'
+        : 'rm --i-have-explicit-permission-from-user -rf /path/to/delete';
+      
       return {
         pid: -1,
         output: '🚨 DESTRUCTIVE OPERATION BLOCKED! 🚨\n\n' +
-                'This command requires explicit permission.\n' +
+                `${operationType} requires explicit permission.\n` +
                 'To execute, you MUST:\n' +
-                '1. Ask the user what specifically they want deleted\n' +
-                '2. Show them what will be affected\n' +
+                '1. Ask the user what specifically will be affected\n' +
+                '2. Show them the consequences\n' +
                 '3. Get explicit confirmation\n' +
                 '4. Add flag: --i-have-explicit-permission-from-user\n\n' +
-                'Example: rm --i-have-explicit-permission-from-user -rf /path/to/delete',
+                `Example: ${example}`,
         isBlocked: false
       };
     }
