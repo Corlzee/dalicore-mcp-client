@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 
 import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Get the directory where this script lives
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const ck = spawn(process.argv[0], ['./dist/index.js'], {
-  cwd: '/home/konverts/projects/Commander-Keen-Dev',
+  cwd: __dirname,  // Use the script's directory as working directory
   stdio: ['pipe', 'pipe', 'inherit']
 });
 
@@ -15,13 +21,13 @@ process.stdin.on('readable', () => {
     const msgData = process.stdin.read(msgLength);
     
     if (msgData) {
-      // Commander Keen expects raw JSON + newline
+      // dalicore-mcp-client expects raw JSON + newline
       ck.stdin.write(msgData + '\n');
     }
   }
 });
 
-// Commander Keen outputs JSON lines
+// dalicore-mcp-client outputs JSON lines
 ck.stdout.on('data', (data) => {
   const lines = data.toString().split('\n').filter(l => l.trim());
   
@@ -41,9 +47,9 @@ ck.stdout.on('data', (data) => {
   }
 });
 
-// Handle Commander Keen errors
+// Handle errors
 ck.on('error', (err) => {
-  console.error('Commander Keen error:', err);
+  console.error('dalicore-mcp-client error:', err);
   process.exit(1);
 });
 

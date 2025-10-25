@@ -1,11 +1,11 @@
 {
-  "name": "@konverts/dalicore-mcp-client",
+  "name": "@corlzee/dalicore-mcp-client",
   "version": "1.0.0",
   "description": "Streamlined MCP client for Dalicore - 7 essential tools for file operations, code editing, and command execution",
   "license": "MIT",
   "author": "Dalicore Team",
-  "homepage": "https://github.com/konverts/dalicore-mcp-client",
-  "bugs": "https://github.com/konverts/dalicore-mcp-client/issues",
+  "homepage": "https://github.com/Corlzee/dalicore-mcp-client",
+  "bugs": "https://github.com/Corlzee/dalicore-mcp-client/issues",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"

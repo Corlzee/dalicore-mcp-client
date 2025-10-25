@@ -125,7 +125,7 @@ Teaches best practices instead of just saying "no."
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/konverts/dalicore-mcp-client.git
+git clone https://github.com/Corlzee/dalicore-mcp-client.git
 cd dalicore-mcp-client
 npm install
 npm run build
@@ -362,7 +362,7 @@ MIT
 
 ## Support
 
-- **Issues:** https://github.com/konverts/dalicore-mcp-client/issues
+- **Issues:** https://github.com/Corlzee/dalicore-mcp-client/issues
 - **Docs:** https://docs.claude.com (general MCP documentation)
 
 ---

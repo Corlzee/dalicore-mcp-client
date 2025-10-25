@@ -39,21 +39,21 @@ rm --i-have-explicit-permission-from-user -rf /some/directory
 
 1. Build the project:
 ```bash
-cd /home/konverts/projects/Commander-Keen
+cd /path/to/dalicore-mcp-client
 npm install
 npm run build
 ```
 
-2. Update your Claude Desktop configuration to use Commander Keen instead of desktop-commander:
+2. Update your Claude Desktop configuration to use dalicore-mcp-client:
 
-Edit `~/.config/Claude/claude_desktop_config.json` and replace the desktop-commander entry with:
+Edit `~/.config/Claude/claude_desktop_config.json` and add:
 
 ```json
 {
   "mcpServers": {
-    "commander-keen": {
+    "dalicore-mcp-client": {
       "command": "node",
-      "args": ["/home/konverts/projects/Commander-Keen/dist/index.js"]
+      "args": ["/absolute/path/to/dalicore-mcp-client/dist/index.js"]
     }
   }
 }
