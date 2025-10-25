@@ -8,18 +8,30 @@ Built for efficiency based on real usage data - covers 97.5% of actual workflow 
 
 ## Why This Fork?
 
+**The Token Cost Problem:**
+Every tool call in MCP consumes tokens. Desktop Commander's 25+ tools meant:
+- AI models waste tokens evaluating irrelevant tools
+- Increased confusion leads to wrong tool selection
+- Higher API costs for every interaction
+
 **Original:** Desktop Commander MCP had 25+ tools  
 **Problem:** Only 7 tools accounted for 97.5% of actual usage  
-**Solution:** Stripped down to essentials, added helpful guidance
+**Solution:** Stripped down to essentials, enhanced the survivors
 
 **Data-driven design:**
-- Analyzed 12,302 actual tool calls
+- Analyzed 12,302 actual tool calls across real usage
 - Kept the 7 most-used tools (97.5% coverage)
 - Cut 288 lines of bloat (46% reduction)
-- Added system awareness and helpful error messages
+- **Significantly less tool context sent with every interaction** (25 → 7 tools)
 
----
+**Key improvements over Desktop Commander:**
+- **System information built-in** - No separate tool call needed (OS, architecture, paths, allowed directories)
+- **Line count tracking** - `read_file` and `write_file` show actual lines processed
+- **Intelligent chunking** - `write_file` automatically chunks large files (25-30 lines) to avoid token waste
+- **Better error messages** - Clear guidance when operations fail, with suggestions for fixes
+- **Smart state detection** - `start_process` detects REPL prompts and completion states automatically
 
+**Bottom line:** Fewer tools = lower costs, faster responses, less confusion.
 ## The 7 Essential Tools
 
 ### Process Management
