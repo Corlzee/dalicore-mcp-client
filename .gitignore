@@ -50,6 +50,13 @@ debug.log
 # Temporary test files
 test_permissions.txt
 test_dir_permissions/
+test/test_output/
+test/test_allowed_dirs/
+test/test_directories/
+test/test_edit_line_endings/
+test/test_edit_occurrences/
+test/test_search/
+test/*.txt
 
 # Backup and temporary files
 *.old
