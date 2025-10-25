@@ -93,9 +93,15 @@ export function getToolHistory(options: ToolHistoryOptions): string {
                 const args = data.params?.arguments || {};
                 const extracted = extractToolDetails(toolName, args, options.showFullCommands);
                 
-                // Filter by path if specified
-                if (options.pathFilter && extracted.path && !extracted.path.includes(options.pathFilter)) {
-                    continue;
+                // Filter by path/content if specified
+                if (options.pathFilter) {
+                    const pathMatch = extracted.path && extracted.path.includes(options.pathFilter);
+                    const detailsMatch = extracted.details && extracted.details.includes(options.pathFilter);
+                    
+                    // For tools with paths, check path. For tools without paths (like start_process), check details
+                    if (!pathMatch && !detailsMatch) {
+                        continue;
+                    }
                 }
                 
                 // Look up the result for this request
