@@ -50,3 +50,10 @@ debug.log
 # Temporary test files
 test_permissions.txt
 test_dir_permissions/
+
+# Backup and temporary files
+*.old
+*.backup
+*.new
+*.bak
+*~
