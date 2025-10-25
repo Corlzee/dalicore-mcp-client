@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync, existsSync, statSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
 
@@ -24,22 +24,84 @@ export interface ToolHistoryOptions {
 }
 
 const EDIT_TOOLS = ['write_file', 'edit_block'];
-const LOG_PATH = join(homedir(), '.config', 'Claude', 'logs', 'mcp-server-dalicore-mcp-client.log');
+const LOG_DIR = join(homedir(), '.config', 'Claude', 'logs');
+const LOG_BASE_NAME = 'mcp-server-dalicore-mcp-client.log';
+const LOG_PATH = join(LOG_DIR, LOG_BASE_NAME);
+
+/**
+ * Get list of log files to search based on time scope
+ */
+function getLogFilesToSearch(sinceTimestamp: Date | null, limit: number): string[] {
+    const logs: string[] = [];
+    
+    // Always include current log
+    if (existsSync(LOG_PATH)) {
+        logs.push(LOG_PATH);
+    }
+    
+    // If no time filter and modest limit, just current log is enough
+    if (!sinceTimestamp && limit <= 50) {
+        return logs;
+    }
+    
+    // Calculate how far back we need to go
+    let daysBack = 7; // Default assumption
+    if (sinceTimestamp) {
+        daysBack = Math.ceil((Date.now() - sinceTimestamp.getTime()) / (1000 * 60 * 60 * 24));
+    } else if (limit > 100) {
+        // Large limit without time filter - assume they want deeper history
+        daysBack = 30;
+    }
+    
+    // Find rotated log files (supports both {name}.log.1 and {name}1.log patterns)
+    if (existsSync(LOG_DIR)) {
+        const baseName = LOG_BASE_NAME.replace('.log', '');
+        const files = readdirSync(LOG_DIR)
+            .filter(f => {
+                // Match: mcp-server-dalicore-mcp-client.log.1, .log.2, etc.
+                const dotPattern = f.startsWith(LOG_BASE_NAME + '.');
+                // Match: mcp-server-dalicore-mcp-client1.log, 2.log, etc.
+                const numberPattern = f.match(new RegExp(`^${baseName}\\d+\\.log$`));
+                return (dotPattern || numberPattern) && !f.endsWith('.gz');
+            })
+            .map(f => join(LOG_DIR, f))
+            .map(path => ({ path, mtime: statSync(path).mtime.getTime() }))
+            .sort((a, b) => b.mtime - a.mtime); // Newest first
+        
+        // Estimate how many rotated logs we need (assume ~7 days per log file)
+        const neededCount = Math.min(files.length, Math.ceil(daysBack / 7));
+        logs.push(...files.slice(0, neededCount).map(f => f.path));
+    }
+    
+    return logs;
+}
 
 /**
  * Parse MCP log file for tool call history with result correlation
  */
 export function getToolHistory(options: ToolHistoryOptions): string {
     try {
-        const logContent = readFileSync(LOG_PATH, 'utf-8');
-        const lines = logContent.split('\n');
-        
         // Calculate time filter if specified
         const sinceTimestamp = options.since ? parseSinceTime(options.since) : null;
         
+        // Determine which log files to search
+        const logFiles = getLogFilesToSearch(sinceTimestamp, options.limit);
+        
+        // Read all log files
+        const allLines: string[] = [];
+        for (const logFile of logFiles) {
+            try {
+                const content = readFileSync(logFile, 'utf-8');
+                allLines.push(...content.split('\n'));
+            } catch (error) {
+                // Skip files that can't be read
+                continue;
+            }
+        }
+        
         // First pass: Build a map of request IDs to results
         const resultMap = new Map<string | number, any>();
-        for (const line of lines) {
+        for (const line of allLines) {
             if (!line.includes('Message from server')) continue;
             
             try {
@@ -58,8 +120,8 @@ export function getToolHistory(options: ToolHistoryOptions): string {
         // Second pass: Parse tool calls and correlate with results
         const entries: ToolHistoryEntry[] = [];
         
-        for (let i = lines.length - 1; i >= 0 && entries.length < options.limit * 2; i--) {
-            const line = lines[i];
+        for (let i = allLines.length - 1; i >= 0 && entries.length < options.limit * 2; i--) {
+            const line = allLines[i];
             
             // Look for tool call messages
             if (!line.includes('tools/call')) continue;
@@ -133,7 +195,8 @@ export function getToolHistory(options: ToolHistoryOptions): string {
             return 'No tool history found matching the filter criteria.';
         }
         
-        return options.verbose ? formatVerbose(entries) : formatCompact(entries);
+        const logFileInfo = logFiles.length > 1 ? ` (from ${logFiles.length} log files)` : '';
+        return options.verbose ? formatVerbose(entries, logFileInfo) : formatCompact(entries, logFileInfo);
         
     } catch (error) {
         return `Error reading tool history: ${error instanceof Error ? error.message : String(error)}`;
@@ -342,8 +405,8 @@ function extractResultInfo(toolName: string, result: any, args: any): {
     return { success: true, resultSummary };
 }
 
-function formatCompact(entries: ToolHistoryEntry[]): string {
-    const lines: string[] = [`RECENT FILESYSTEM EDITS (last ${entries.length}):`];
+function formatCompact(entries: ToolHistoryEntry[], logFileInfo: string): string {
+    const lines: string[] = [`RECENT FILESYSTEM EDITS (last ${entries.length})${logFileInfo}:`];
     
     for (const entry of entries) {
         const timeAgo = getTimeAgo(entry.timestamp);
@@ -360,8 +423,8 @@ function formatCompact(entries: ToolHistoryEntry[]): string {
     return lines.join('\n');
 }
 
-function formatVerbose(entries: ToolHistoryEntry[]): string {
-    const lines: string[] = [`RECENT FILESYSTEM EDITS (last ${entries.length}):\n`];
+function formatVerbose(entries: ToolHistoryEntry[], logFileInfo: string): string {
+    const lines: string[] = [`RECENT FILESYSTEM EDITS (last ${entries.length})${logFileInfo}:\n`];
     
     for (const entry of entries) {
         const timeAgo = getTimeAgo(entry.timestamp);
