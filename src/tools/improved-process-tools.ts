@@ -56,12 +56,7 @@ ${parsed.data.command}
 2. If you approve, please run it in your terminal yourself
 3. Then tell me the result so I can continue
 
-**Alternative:** For Dalicore services, I can use these safe commands without sudo:
-- \`/home/konverts/projects/dalicore/bin/dalicore-service <action> <service>\`
-- \`/home/konverts/projects/dalicore/bin/dalicore-restart <name>\`
-- \`/home/konverts/projects/dalicore/bin/dalicore-status\`
-
-Should I use one of the wrapper commands instead, or would you like to run the sudo command yourself?` 
+Would you like to run the sudo command yourself?` 
         }],
         isError: true,
       };

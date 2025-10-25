@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Streamlined MCP client for Dalicore - 7 essential tools for file operations, code editing, and command execution",
   "license": "MIT",
-  "author": "Dalicore Team",
+  "author": "Corlzee",
   "homepage": "https://github.com/Corlzee/dalicore-mcp-client",
   "bugs": "https://github.com/Corlzee/dalicore-mcp-client/issues",
   "type": "module",
@@ -48,7 +48,6 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "dalicore",
     "claude",
     "ai",
     "file-operations",
@@ -56,7 +55,8 @@
     "surgical-edits",
     "command-execution",
     "streamlined",
-    "essential-tools"
+    "essential-tools",
+    "desktop-commander"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.8.0",

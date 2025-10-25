@@ -354,9 +354,9 @@ MIT
 
 ## Credits
 
-- **Original:** [Desktop Commander MCP](https://github.com/wonderwhy-er/DesktopCommanderMCP) by @wonderwhy-er
-- **Data Analysis & Streamlining:** Dalicore Team
-- **Philosophy:** Less is more (when backed by data)
+- **Original:** [Desktop Commander MCP](https://github.com/wonderwhy-er/DesktopCommanderMCP) by Eduard Ruzga (@wonderwhy-er)
+- **This Fork:** Streamlined to 7 essential tools based on 12,302 actual tool calls
+- **Data-Driven Philosophy:** Less is more (when backed by data)
 
 ---
 
@@ -367,4 +367,4 @@ MIT
 
 ---
 
-**Built for Dalicore. Focused. Efficient. Data-driven.**
+**Streamlined. Efficient. Data-driven.**
