@@ -27,6 +27,7 @@ export const ReadFileArgsSchema = z.object({
   isUrl: z.boolean().optional().default(false),
   offset: z.number().optional().default(0),
   length: z.number().optional().default(1000),
+  show_whitespace: z.boolean().optional().default(true),  // Default to true so tabs are always visible
 });
 
 // File Writing

@@ -639,9 +639,10 @@ async function readFromEstimatedPosition(filePath: string, offset: number, lengt
  * @param filePath Path to the file
  * @param offset Starting line number to read from (default: 0)
  * @param length Maximum number of lines to read (default: from config or 1000)
+ * @param showWhitespace Whether to visualize whitespace characters (default: false)
  * @returns File content or file result with metadata
  */
-export async function readFileFromDisk(filePath: string, offset: number = 0, length?: number): Promise<FileResult> {
+export async function readFileFromDisk(filePath: string, offset: number = 0, length?: number, showWhitespace: boolean = false): Promise<FileResult> {
     // Add validation for required parameters
     if (!filePath || typeof filePath !== 'string') {
         throw new Error('Invalid file path provided');
@@ -695,9 +696,28 @@ export async function readFileFromDisk(filePath: string, offset: number = 0, len
             
             return { content, mimeType, isImage };
         } else {
-            // For all other files, use smart positioning approach
+            // CRITICAL FIX: Use readFileInternal to preserve exact whitespace/line endings
+            // This ensures read_file and edit_block see IDENTICAL content
             try {
-                return await readFileWithSmartPositioning(validPath, offset, length, mimeType, true);
+                const content = await readFileInternal(filePath, offset, length);
+                
+                // Add status metadata like the old implementation did
+                const lines = content.split(/\r?\n/);
+                const statusMessage = offset === 0
+                    ? `[Reading ${lines.length} lines from start]`
+                    : `[Reading ${lines.length} lines from line ${offset + 1}]`;
+                
+                return {
+                    content,
+                    mimeType,
+                    isImage: false,
+                    metadata: {
+                        statusMessage,
+                        offset,
+                        linesRead: lines.length,
+                        startLine: offset + 1
+                    }
+                };
             } catch (error) {
                 // If UTF-8 reading fails, treat as binary and return base64 but still as text
                 const buffer = await fs.readFile(validPath);
@@ -719,6 +739,21 @@ export async function readFileFromDisk(filePath: string, offset: number = 0, len
         throw new Error('Failed to read the file');
     }
     
+    // Add whitespace visualization if requested (only for text files)
+    if (showWhitespace && !result.isImage && result.content) {
+        const visualized = result.content
+            .replace(/\t/g, '→   ')     // Show tabs as arrows with spaces
+            .replace(/ /g, '·')          // Show spaces as middle dots
+            .replace(/\r/g, '⏎')         // Show carriage returns
+            .replace(/\n/g, '↵\n');      // Show line feeds with down-left arrow
+            
+        result.content = `WHITESPACE VISUALIZATION (→=tab, ·=space, ↵=LF, ⏎=CR):
+${visualized}
+
+ORIGINAL CONTENT:
+${result.content}`;
+    }
+    
     return result;
 }
 
@@ -728,12 +763,13 @@ export async function readFileFromDisk(filePath: string, offset: number = 0, len
  * @param isUrl Whether the path is a URL
  * @param offset Starting line number to read from (default: 0)
  * @param length Maximum number of lines to read (default: from config or 1000)
+ * @param showWhitespace Whether to visualize whitespace characters (default: false)
  * @returns File content or file result with metadata
  */
-export async function readFile(filePath: string, isUrl?: boolean, offset?: number, length?: number): Promise<FileResult> {
+export async function readFile(filePath: string, isUrl?: boolean, offset?: number, length?: number, showWhitespace?: boolean): Promise<FileResult> {
     return isUrl 
         ? readFileFromUrl(filePath)
-        : readFileFromDisk(filePath, offset, length);
+        : readFileFromDisk(filePath, offset, length, showWhitespace);
 }
 
 /**
