@@ -1,6 +1,6 @@
 # Dalicore MCP Client
 
-**Streamlined Model Context Protocol (MCP) server with 7 essential tools for file operations, code editing, and command execution.**
+**Streamlined Model Context Protocol (MCP) server with 8 essential tools for file operations, code editing, and command execution.**
 
 Built for efficiency based on real usage data - covers 97.5% of actual workflow with minimal overhead.
 
@@ -15,14 +15,14 @@ Every tool call in MCP consumes tokens. Desktop Commander's 25+ tools meant:
 - Higher API costs for every interaction
 
 **Original:** Desktop Commander MCP had 25+ tools  
-**Problem:** Only 7 tools accounted for 97.5% of actual usage  
+**Problem:** Only 8 tools accounted for 97.5% of actual usage  
 **Solution:** Stripped down to essentials, enhanced the survivors
 
 **Data-driven design:**
 - Analyzed 12,302 actual tool calls across real usage
-- Kept the 7 most-used tools (97.5% coverage)
+- Kept the 8 most-used tools (97.5% coverage)
 - Cut 288 lines of bloat (46% reduction)
-- **Significantly less tool context sent with every interaction** (25 → 7 tools)
+- **Significantly less tool context sent with every interaction** (25 → 8 tools)
 
 **Key improvements over Desktop Commander:**
 - **System information built-in** - No separate tool call needed (OS, architecture, paths, allowed directories)
@@ -32,7 +32,8 @@ Every tool call in MCP consumes tokens. Desktop Commander's 25+ tools meant:
 - **Smart state detection** - `start_process` detects REPL prompts and completion states automatically
 
 **Bottom line:** Fewer tools = lower costs, faster responses, less confusion.
-## The 7 Essential Tools
+
+## The 8 Essential Tools
 
 ### Process Management
 **`start_process`** - Execute commands with smart state detection  
@@ -73,6 +74,20 @@ Every tool call in MCP consumes tokens. Desktop Commander's 25+ tools meant:
 - 2.5% of all usage
 - Clear [FILE] and [DIR] markers
 - Path validation
+
+### Debugging & History
+**`tool_history`** - View recent tool call history  
+- Track what operations were performed recently
+- Filter by edit operations or view all tool calls
+- Compact or verbose output modes
+- Parses MCP server logs to show command history with timestamps
+
+**How it works:**
+- Reads the MCP server log file (`~/.config/Claude/logs/mcp-server-dalicore-mcp-client.log`)
+- Extracts tool calls with arguments (commands, paths, operations)
+- Shows timestamps as human-readable relative times (e.g., "2m ago")
+- Filters: `edits` (write_file, edit_block only) or `all` (every tool call)
+- Useful for remembering what files were edited, what commands were run, and avoiding duplicate work
 
 ---
 

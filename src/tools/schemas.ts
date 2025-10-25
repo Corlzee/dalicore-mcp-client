@@ -86,3 +86,10 @@ export const EditBlockArgsSchema = z.preprocess(
     expected_replacements: z.number().optional().default(1),
   })
 );
+
+// Tool History
+export const ToolHistoryArgsSchema = z.object({
+  filter: z.enum(['edits', 'all']).default('edits'),
+  limit: z.number().optional().default(10),
+  verbose: z.boolean().optional().default(false),
+});

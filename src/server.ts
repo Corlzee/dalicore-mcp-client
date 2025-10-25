@@ -21,6 +21,7 @@ import {
     SearchFilesArgsSchema,
     EditBlockArgsSchema,
     SearchCodeArgsSchema,
+    ToolHistoryArgsSchema,
 } from "./tools/schemas.js";
 
 import { getSystemInfoHeader } from './utils/systemInfo.js';
@@ -261,6 +262,27 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                         ${CMD_PREFIX_DESCRIPTION}`,
                     inputSchema: zodToJsonSchema(SearchFilesArgsSchema),
                 },
+                
+                // Tool History
+                {
+                    name: "tool_history",
+                    description: `
+                        Get a history of recent tool calls that modified the filesystem.
+                        
+                        Useful for:
+                        - Remembering what files were edited recently
+                        - Checking if a file operation was already performed
+                        - Reviewing recent changes without re-reading files
+                        
+                        Filter options:
+                        - "edits" (default): Only write_file and edit_block operations
+                        - "all": All tool calls
+                        
+                        Verbose mode shows full details; non-verbose shows compact one-liners.
+                        
+                        ${CMD_PREFIX_DESCRIPTION}`,
+                    inputSchema: zodToJsonSchema(ToolHistoryArgsSchema)
+                },
             ],
         };
     } catch (error) {
@@ -307,6 +329,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest)
 
             case "search_files":
                 return await handlers.handleSearchFiles(args);
+
+            case "tool_history":
+                return await handlers.handleToolHistory(args);
 
             default:
                 return {

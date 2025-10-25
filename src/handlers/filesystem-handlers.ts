@@ -6,8 +6,10 @@ import {
     type FileResult
 } from '../tools/filesystem.js';
 
+import { z } from 'zod';
 import {ServerResult} from '../types.js';
 import {withTimeout} from '../utils/withTimeout.js';
+import { getToolHistory } from '../utils/toolHistory.js';
 import {createErrorResponse} from '../error-handlers.js';
 import {configManager} from '../config-manager.js';
 
@@ -15,7 +17,8 @@ import {
     ReadFileArgsSchema,
     WriteFileArgsSchema,
     ListDirectoryArgsSchema,
-    SearchFilesArgsSchema
+    SearchFilesArgsSchema,
+    ToolHistoryArgsSchema
 } from '../tools/schemas.js';
 
 /**
@@ -202,3 +205,25 @@ export async function handleSearchFiles(args: unknown): Promise<ServerResult> {
 
 // The listAllowedDirectories function has been removed
 // Use get_config to retrieve the allowedDirectories configuration
+
+/**
+ * Handle tool history retrieval
+ */
+export async function handleToolHistory(args: unknown): Promise<ServerResult> {
+    try {
+        const parsed = ToolHistoryArgsSchema.parse(args);
+        
+        const history = getToolHistory({
+            filter: parsed.filter,
+            limit: parsed.limit,
+            verbose: parsed.verbose,
+        });
+        
+        return {
+            content: [{ type: "text" as const, text: history }],
+        };
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return createErrorResponse(errorMessage);
+    }
+}
