@@ -74,22 +74,22 @@ async function testNegativeOffset() {
   const tests = [
     {
       name: 'Negative offset -10 (last 10 lines)',
-      args: { path: TEST_FILE, offset: -10, length: 20 },
+      args: { path: TEST_FILE, offset: -10, length: 20, show_whitespace: false },
       expectLines: ['Line 41:', 'Line 42:', 'Line 43:', 'Line 44:', 'Line 45:', 'Line 46:', 'Line 47:', 'Line 48:', 'Line 49:', 'Line 50:']
     },
     {
       name: 'Negative offset -5 (last 5 lines)',
-      args: { path: TEST_FILE, offset: -5, length: 10 },
+      args: { path: TEST_FILE, offset: -5, length: 10, show_whitespace: false },
       expectLines: ['Line 46:', 'Line 47:', 'Line 48:', 'Line 49:', 'Line 50:']
     },
     {
       name: 'Negative offset -1 (last 1 line)',
-      args: { path: TEST_FILE, offset: -1, length: 5 },
+      args: { path: TEST_FILE, offset: -1, length: 5, show_whitespace: false },
       expectLines: ['Line 50:']
     },
     {
       name: 'Large negative offset -100 (beyond file size)',
-      args: { path: TEST_FILE, offset: -100, length: 10 },
+      args: { path: TEST_FILE, offset: -100, length: 10, show_whitespace: false },
       expectLines: ['Line 1:', 'Line 2:', 'Line 3:', 'Line 4:', 'Line 5:', 'Line 6:', 'Line 7:', 'Line 8:', 'Line 9:', 'Line 10:']
     }
   ];
@@ -145,14 +145,16 @@ async function testOffsetComparison() {
     const negativeResult = await handleReadFile({
       path: TEST_FILE,
       offset: -5,
-      length: 10
+      length: 10,
+      show_whitespace: false
     });
     
     // Test reading same lines with positive offset (45 to get last 5 lines of 50)
     const positiveResult = await handleReadFile({
       path: TEST_FILE,
       offset: 45,
-      length: 5
+      length: 5,
+      show_whitespace: false
     });
     
     if (negativeResult.isError || positiveResult.isError) {
@@ -200,17 +202,17 @@ async function testEdgeCases() {
   const edgeTests = [
     {
       name: 'Zero offset with length',
-      args: { path: TEST_FILE, offset: 0, length: 3 },
+      args: { path: TEST_FILE, offset: 0, length: 3, show_whitespace: false },
       shouldPass: true
     },
     {
       name: 'Very large negative offset',
-      args: { path: TEST_FILE, offset: -1000, length: 5 },
+      args: { path: TEST_FILE, offset: -1000, length: 5, show_whitespace: false },
       shouldPass: true // Should handle gracefully
     },
     {
       name: 'Negative offset with zero length',
-      args: { path: TEST_FILE, offset: -5, length: 0 },
+      args: { path: TEST_FILE, offset: -5, length: 0, show_whitespace: false },
       shouldPass: true // Should return empty or minimal content
     }
   ];

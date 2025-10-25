@@ -817,7 +817,11 @@ export async function readFileInternal(filePath: string, offset: number = 0, len
     const lines = splitLinesPreservingEndings(content);
 
     // Apply offset and length
-    const selectedLines = lines.slice(offset, offset + length);
+    // CRITICAL: For negative offsets (tail behavior), ignore length parameter
+    // Otherwise slice(-10, -10+20) creates invalid ranges
+    const selectedLines = offset < 0 
+        ? lines.slice(offset)  // Negative: read last N lines, ignore length
+        : lines.slice(offset, offset + length);  // Positive: normal range
 
     // Join back together (this preserves the original line endings)
     return selectedLines.join('');
