@@ -64,3 +64,8 @@ test/*.txt
 *.new
 *.bak
 *~
+
+# Dalicore-specific local patches (DO NOT COMMIT)
+*.dalicore-patch
+terminal-manager.ts.local
+DALICORE-LOCAL-PATCHES.md
