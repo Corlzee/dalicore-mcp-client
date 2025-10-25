@@ -61,7 +61,8 @@ export class TerminalManager {
         workingDir = cdMatch[1].trim();
       }
       
-      const wrapperPath = path.join(__dirname, '..', 'scripts', 'universal-git-status-wrapper.sh');
+      // Use the centralized wrapper from dalicore project
+      const wrapperPath = '/home/konverts/projects/dalicore/scripts/universal-git-status-wrapper.sh';
       command = command.replace(/\bgit\s+status\b/, `bash ${wrapperPath} "${workingDir}" "git status"`);
     }
     

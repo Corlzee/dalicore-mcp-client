@@ -387,17 +387,17 @@ function extractResultInfo(toolName: string, result: any, args: any): {
             
         case 'search_code':
             // Count matches in result
-            const matches = contentText.split('\n').filter(l => l.match(/^\d+:/)).length;
+            const matches = contentText.split('\n').filter((l: string) => l.match(/^\d+:/)).length;
             resultSummary = matches > 0 ? `Found ${matches} matches` : 'No matches';
             break;
             
         case 'search_files':
-            const fileCount = contentText.split('\n').filter(l => l.trim().length > 0).length;
+            const fileCount = contentText.split('\n').filter((l: string) => l.trim().length > 0).length;
             resultSummary = fileCount > 0 ? `Found ${fileCount} files` : 'No files found';
             break;
             
         case 'list_directory':
-            const itemCount = contentText.split('\n').filter(l => l.match(/^\[(FILE|DIR)\]/)).length;
+            const itemCount = contentText.split('\n').filter((l: string) => l.match(/^\[(FILE|DIR)\]/)).length;
             resultSummary = `${itemCount} items`;
             break;
     }
