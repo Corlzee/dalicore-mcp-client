@@ -76,18 +76,32 @@ Every tool call in MCP consumes tokens. Desktop Commander's 25+ tools meant:
 - Path validation
 
 ### Debugging & History
-**`tool_history`** - View recent tool call history  
-- Track what operations were performed recently
-- Filter by edit operations or view all tool calls
-- Compact or verbose output modes
-- Parses MCP server logs to show command history with timestamps
+**`tool_history`** - View recent tool call history with success/failure tracking  
+- Track what operations were performed and whether they succeeded
+- See actual results (lines written, matches found, command output)
+- Filter by tool type, time range, or file/command patterns
+- Compact or verbose output modes with ✓/✗ status indicators
+- Parses both request and result logs for complete operation history
 
-**How it works:**
-- Reads the MCP server log file (`~/.config/Claude/logs/mcp-server-dalicore-mcp-client.log`)
-- Extracts tool calls with arguments (commands, paths, operations)
-- Shows timestamps as human-readable relative times (e.g., "2m ago")
-- Filters: `edits` (write_file, edit_block only) or `all` (every tool call)
-- Useful for remembering what files were edited, what commands were run, and avoiding duplicate work
+**Advanced filtering:**
+- `filter`: "edits" (write_file, edit_block only) or "all" (every tool call)
+- `since`: Time-based filtering ("1h", "30m", "2d", or ISO timestamp)
+- `pathFilter`: Search by file path or command content (e.g., "git push")
+- `showFullCommands`: Display complete commands without truncation
+
+**Result tracking shows:**
+- Success/failure status with error messages
+- Lines read/written for file operations
+- Matches found for search operations
+- Process output and exit status
+- Actual replacements applied for edits
+
+**Use cases:**
+- Debug failed operations with detailed error messages
+- Verify operations completed successfully
+- Track command history and output
+- Find all operations on specific files
+- Audit recent changes by time period
 
 ---
 
