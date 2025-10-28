@@ -16,6 +16,7 @@ export interface ServerConfig {
   telemetryEnabled?: boolean; // New field for telemetry control
   fileWriteLineLimit?: number; // Line limit for file write operations
   fileReadLineLimit?: number; // Default line limit for file read operations (changed from character-based)
+  gitWrapperPath?: string; // Optional path to git status wrapper script
   [key: string]: any; // Allow for arbitrary configuration keys
 }
 
@@ -133,7 +134,8 @@ class ConfigManager {
       ],
       telemetryEnabled: true, // Default to opt-out approach (telemetry on by default)
       fileWriteLineLimit: 50,  // Default line limit for file write operations (changed from 100)
-      fileReadLineLimit: 1000  // Default line limit for file read operations (changed from character-based)
+      fileReadLineLimit: 1000,  // Default line limit for file read operations (changed from character-based)
+      gitWrapperPath: undefined // Optional: path to git status wrapper (e.g., '/home/user/projects/dalicore/scripts/universal-git-status-wrapper.sh')
     };
   }
 

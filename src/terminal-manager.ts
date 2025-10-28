@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 import { TerminalSession, CommandExecutionResult, ActiveSession } from './types.js';
 import { DEFAULT_COMMAND_TIMEOUT } from './config.js';
 import { configManager } from './config-manager.js';
@@ -53,17 +54,23 @@ export class TerminalManager {
     // Universal git status enhancement
     const GIT_STATUS_PATTERN = /\bgit\s+status\b/;
     if (GIT_STATUS_PATTERN.test(command)) {
-      // Extract the working directory from the command if it includes 'cd'
-      let workingDir = global.process.cwd();
-      const cdPattern = /cd\s+([^&;]+)\s*&&/;
-      const cdMatch = command.match(cdPattern);
-      if (cdMatch) {
-        workingDir = cdMatch[1].trim();
-      }
+      // Get wrapper path from config
+      const gitWrapperPath = await configManager.getValue('gitWrapperPath');
       
-      // Use the centralized wrapper from dalicore project
-      const wrapperPath = '/home/konverts/projects/dalicore/scripts/universal-git-status-wrapper.sh';
-      command = command.replace(/\bgit\s+status\b/, `bash ${wrapperPath} "${workingDir}" "git status"`);
+      // Only use wrapper if configured and file exists
+      if (gitWrapperPath && existsSync(gitWrapperPath)) {
+        // Extract the working directory from the command if it includes 'cd'
+        let workingDir = global.process.cwd();
+        const cdPattern = /cd\s+([^&;]+)\s*&&/;
+        const cdMatch = command.match(cdPattern);
+        if (cdMatch) {
+          workingDir = cdMatch[1].trim();
+        }
+        
+        // Use the wrapper
+        command = command.replace(/\bgit\s+status\b/, `bash ${gitWrapperPath} "${workingDir}" "git status"`);
+      }
+      // Otherwise, let git status run normally
     }
     
     // Safety check for dangerous rm commands
